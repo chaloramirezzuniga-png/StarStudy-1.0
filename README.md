@@ -14,7 +14,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 |---------------|-------------|
 | **Tareas** | Creación, asignación y seguimiento con niveles de importancia (Baja → Crítica). Filtros por estado y urgencia. |
 | **Horarios** | Gestión de horarios personales y de curso, con vista tipo mapa interactivo. |
-| **Hábitos** | Seguimiento diario con sistema de niveles: cada día que completás un hábito subís de nivel. |
+| **Hábitos** | Seguimiento diario con sistema de niveles: completá un hábito cada día para subir de nivel. |
 | **Notificaciones** | Alertas al completar tareas, al vencer plazos, y recordatorios de hábitos. |
 | **Vinculación** | Profesores generan un código; estudiantes lo usan al registrarse para vincularse automáticamente. |
 | **Gamificación** | Sistema de niveles y misiones (visible para rol Programador). |
