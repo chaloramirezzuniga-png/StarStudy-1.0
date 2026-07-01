@@ -1,32 +1,72 @@
-# Proyecto TP — Gestión de Tareas y Horarios
+# StarStudy 🌟
 
-Plataforma educativa con roles (Estudiante, Profesor, Personal, Programador), gamificación y hábitos.
+Plataforma educativa inteligente con roles, gamificación y gestión de hábitos.
 
-## Requisitos
+Diseñada para conectar **estudiantes**, **profesores**, **personal administrativo** y **programadores** en un solo entorno, con una interfaz temática *Noche Estrellada* al estilo Van Gogh.
 
-- Python 3.12+
-- pip
+---
 
-## Instalación
+## ✨ ¿Para qué sirve?
+
+**StarStudy** organiza la vida académica mediante:
+
+| Funcionalidad | Descripción |
+|---------------|-------------|
+| **Tareas** | Creación, asignación y seguimiento con niveles de importancia (Baja → Crítica). Filtros por estado y urgencia. |
+| **Horarios** | Gestión de horarios personales y de curso, con vista tipo mapa interactivo. |
+| **Hábitos** | Seguimiento diario con sistema de niveles: cada día que completás un hábito subís de nivel. |
+| **Notificaciones** | Alertas al completar tareas, al vencer plazos, y recordatorios de hábitos. |
+| **Vinculación** | Profesores generan un código; estudiantes lo usan al registrarse para vincularse automáticamente. |
+| **Gamificación** | Sistema de niveles y misiones (visible para rol Programador). |
+
+---
+
+## 👥 Roles
+
+| Rol | Acceso |
+|-----|--------|
+| **Estudiante** | Tareas asignadas, horario del curso vinculado |
+| **Profesor** | Crear/asignar tareas, horarios personales y de clase, código de vinculación |
+| **Personal** | Horarios, tareas personales, **sistema de hábitos** "Misión Principal" |
+| **Programador** | Vista tipo misión/mapa, conexión con GitHub |
+
+---
+
+## 🖼️ Diseño
+
+- Temática oscura "Noche Estrellada" con acentos dorados (`#ffd54f`)
+- Formularios transparentes con borde inferior dorado
+- Modal auto-cierre a 3 segundos
+- Totalmente responsive
+
+---
+
+## 🛠️ Tecnologías
+
+- **Backend:** Django 6.0
+- **Frontend:** Bootstrap 5, Bootstrap Icons
+- **Base de datos:** SQLite
+- **Notificaciones programadas:** APScheduler
+
+---
+
+## ⚙️ Instalación
 
 ```bash
-# Clonar el repositorio
-git clone <url-del-repo>
-cd proyecto-tp
+# Clonar
+git clone https://github.com/tu-usuario/StarStudy.git
+cd StarStudy
 
-# Crear y activar entorno virtual
+# Entorno virtual
 python -m venv venv
 venv\Scripts\activate   # Windows
-# source venv/bin/activate   # Linux/Mac
+# source venv/bin/activate   # Linux/macOS
 
-# Instalar dependencias
+# Dependencias
 pip install -r requirements.txt
 
-# Migrar base de datos
+# Base de datos
 python manage.py migrate
-
-# Crear superusuario (opcional)
-python manage.py createsuperuser
 
 # Iniciar servidor
 python manage.py runserver
@@ -34,20 +74,18 @@ python manage.py runserver
 
 Abrir http://127.0.0.1:8000/
 
-## Roles
+---
 
-| Rol | Descripción |
-|-----|-------------|
-| Estudiante | Ve tareas asignadas y horario del curso |
-| Profesor | Crea/Asigna tareas, gestiona horarios |
-| Personal | Gestiona hábitos con sistema de niveles |
-| Programador | Misión interactiva + conexión GitHub |
+## 🧪 Primeros pasos
 
-## Funcionalidades
+1. Registrate con cualquier rol (Estudiante, Profesor, Personal, Programador)
+2. Si sos **Profesor**: creá tareas y compartí tu código de vinculación
+3. Si sos **Estudiante**: vinculate con el código de un profesor
+4. Si sos **Personal**: probá la sección "Misión Principal" (hábitos)
+5. Si sos **Programador**: conectá tu cuenta de GitHub
 
-- Tareas personales y asignadas con niveles de importancia
-- Horarios personalizados por rol
-- Notificaciones en tiempo real
-- Hábitos diarios con subida de nivel
-- Código de vinculación estudiante-profesor
-- Gamificación (niveles, misiones)
+---
+
+## 📄 Licencia
+
+Uso educativo.

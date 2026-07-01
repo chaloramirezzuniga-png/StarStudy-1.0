@@ -15,4 +15,4 @@ print(f">>> Abriendo {url} ...")
 threading.Timer(1.5, lambda: webbrowser.open(url)).start()
 
 print(f">>> Iniciando servidor en {url}")
-call_command('runserver', '0.0.0.0:8000')
+call_command('runserver', '127.0.0.1:8000')

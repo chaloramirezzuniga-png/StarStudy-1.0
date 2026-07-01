@@ -32,3 +32,6 @@ Thumbs.db
 
 # Git
 *.orig
+
+# Scheduler db (APScheduler)
+apscheduler.db

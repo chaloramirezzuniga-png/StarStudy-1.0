@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 from .forms import CustomLoginForm
-from .habit_scheduler import start as start_habit_scheduler
+from .scheduler import start as start_habit_scheduler
 
 start_habit_scheduler()
 
