@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-star me-2" style="color: var(--accent);"></i>Misión Principal</span>
+                <a href="{% url 'habito_create' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus-lg me-1"></i>Nuevo hábito
+                </a>
+            </div>
+            <div class="card-body">
+                {% if habits %}
+                <div class="list-group list-group-flush">
+                    {% for habit in habits %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ habit.title }}</strong>
+                            <div class="mt-1">
+                                <span class="badge text-bg-primary me-2">Nv. {{ habit.level }}</span>
+                                <small class="text-muted">{{ habit.start_time|time:'H:i' }} - {{ habit.end_time|time:'H:i' }}</small>
+                                <span class="mx-1">·</span>
+                                <small class="text-muted">{{ habit.total_completions }} completado{{ habit.total_completions|pluralize:'s' }}</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'habito_toggle' habit.pk %}"
+                               class="btn btn-sm {% if habit.completed_today %}btn-success{% else %}btn-outline-light{% endif %}">
+                                {% if habit.completed_today %}
+                                <i class="bi bi-check-circle-fill me-1"></i>Hecho
+                                {% else %}
+                                <i class="bi bi-check-circle me-1"></i>Completar
+                                {% endif %}
+                            </a>
+                            <a href="{% url 'habito_delete' habit.pk %}"
+                               class="btn btn-outline-danger btn-sm"
+                               onclick="return confirm('¿Eliminar este hábito?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center mb-0">No tenés hábitos todavía. Creá uno nuevo.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
