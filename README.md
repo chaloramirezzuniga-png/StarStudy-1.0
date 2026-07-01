@@ -86,6 +86,20 @@ Abrir http://127.0.0.1:8000/
 
 ---
 
+## 🤝 Comunidad
+
+**StarStudy** es un proyecto abierto a toda la comunidad educativa y de desarrollo.
+
+- **Usalo** — registrate con tu rol y probá todas las funcionalidades
+- **Compartilo** — si te sirve, recomendalo a otros estudiantes o docentes
+- **Mejoralo** — si sabés programar, hacé fork, creá una branch y mandá un pull request
+- **Reportá bugs** — abrí un issue en GitHub si encontrás algún error
+- **Proponé ideas** — cualquier sugerencia es bienvenida
+
+Entre todos podemos hacer de StarStudy una herramienta cada vez mejor para la educación. ¡Sumate y aportá tu granito de estrella! 🌟
+
+---
+
 ## 📄 Licencia
 
 Uso educativo.
