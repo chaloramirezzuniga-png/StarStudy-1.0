@@ -1,4 +1,4 @@
-# StarStudy 🌟
+# StarStudy
 
 Plataforma educativa inteligente con roles, gamificación y gestión de hábitos.
 
@@ -6,7 +6,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ---
 
-## ✨ ¿Para qué sirve?
+## ¿Para qué sirve?
 
 **StarStudy** organiza la vida académica mediante:
 
@@ -21,7 +21,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ---
 
-## 👥 Roles
+## Roles
 
 | Rol | Acceso |
 |-----|--------|
@@ -32,7 +32,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ---
 
-## 🖼️ Diseño
+## Diseño
 
 - Temática oscura "Noche Estrellada" con acentos dorados (`#ffd54f`)
 - Formularios transparentes con borde inferior dorado
@@ -41,7 +41,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ---
 
-## 🛠️ Tecnologías
+## Tecnologías
 
 - **Backend:** Django 6.0
 - **Frontend:** Bootstrap 5, Bootstrap Icons
@@ -50,7 +50,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ---
 
-## ⚙️ Instalación
+## Instalación
 
 ```bash
 # Clonar
@@ -76,7 +76,7 @@ Abrir http://127.0.0.1:8000/
 
 ---
 
-## 🧪 Primeros pasos
+## Primeros pasos
 
 1. Registrate con cualquier rol (Estudiante, Profesor, Personal, Programador)
 2. Si sos **Profesor**: creá tareas y compartí tu código de vinculación
@@ -86,7 +86,7 @@ Abrir http://127.0.0.1:8000/
 
 ---
 
-## 🤝 Comunidad
+## Comunidad
 
 **StarStudy** es un proyecto abierto a toda la comunidad educativa y de desarrollo.
 
@@ -96,10 +96,10 @@ Abrir http://127.0.0.1:8000/
 - **Reportá bugs** — abrí un issue en GitHub si encontrás algún error
 - **Proponé ideas** — cualquier sugerencia es bienvenida
 
-Entre todos podemos hacer de StarStudy una herramienta cada vez mejor para la educación. ¡Sumate y aportá tu granito de estrella! 🌟
+Entre todos podemos hacer de StarStudy una herramienta cada vez mejor para la educación. Sumate y aporta tu granito de estrella.
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Uso educativo.
