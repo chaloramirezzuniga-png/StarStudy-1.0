@@ -56,7 +56,7 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ```powershell
 # descarga el proyecto
-git clone https://github.com/tu-usuario/StarStudy.git
+git clone https://github.com/chaloramirezzuniga-png/StarStudy.git
 # entra a la carpeta del proyecto
 cd StarStudy
 # crea un entorno virtual (aisla las dependencias)
@@ -73,7 +73,7 @@ python run.py
 
 ```bash
 # descarga el proyecto
-git clone https://github.com/tu-usuario/StarStudy.git
+git clone https://github.com/chaloramirezzuniga-png/StarStudy.git
 # entra a la carpeta del proyecto
 cd StarStudy
 # crea un entorno virtual (aisla las dependencias)
