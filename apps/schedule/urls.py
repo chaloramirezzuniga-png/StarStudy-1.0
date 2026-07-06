@@ -1,8 +1,5 @@
 from django.urls import path
 from . import views
-from .scheduler import start as start_habit_scheduler
-
-start_habit_scheduler()
 
 urlpatterns = [
     path('', views.schedule_personal, name='schedule_personal'),
