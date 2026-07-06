@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Case, IntegerField, Value, When
 
 
 class Task(models.Model):
@@ -23,7 +24,17 @@ class Task(models.Model):
     file = models.FileField(upload_to='task_files/', blank=True, null=True)
 
     class Meta:
-        ordering = ['-importance', 'deadline']
+        ordering = [
+            Case(
+                When(importance='CRITICAL', then=Value(0)),
+                When(importance='HIGH', then=Value(1)),
+                When(importance='MEDIUM', then=Value(2)),
+                When(importance='LOW', then=Value(3)),
+                default=Value(4),
+                output_field=IntegerField(),
+            ),
+            'deadline',
+        ]
 
     def __str__(self):
         return f"{self.title} - {self.assigned_to.email}"
