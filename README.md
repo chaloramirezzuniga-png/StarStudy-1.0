@@ -55,23 +55,35 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 ### Windows
 
 ```powershell
-git clone https://github.com/tu-usuario/StarStudy.git   # descarga el proyecto
-cd StarStudy                                              # entra a la carpeta del proyecto
-python -m venv venv                                       # crea un entorno virtual (aisla las dependencias)
-.\venv\Scripts\activate                                   # activa el entorno virtual
-pip install -r requirements.txt                           # instala las librerias necesarias
-python run.py                                             # inicia el servidor
+# descarga el proyecto
+git clone https://github.com/tu-usuario/StarStudy.git
+# entra a la carpeta del proyecto
+cd StarStudy
+# crea un entorno virtual (aisla las dependencias)
+python -m venv venv
+# activa el entorno virtual
+.\venv\Scripts\activate
+# instala las librerias necesarias
+pip install -r requirements.txt
+# inicia el servidor
+python run.py
 ```
 
 ### Linux / macOS
 
 ```bash
-git clone https://github.com/tu-usuario/StarStudy.git   # descarga el proyecto
-cd StarStudy                                              # entra a la carpeta del proyecto
-python3 -m venv venv                                      # crea un entorno virtual (aisla las dependencias)
-source venv/bin/activate                                  # activa el entorno virtual
-pip install -r requirements.txt                           # instala las librerias necesarias
-python3 run.py                                            # inicia el servidor
+# descarga el proyecto
+git clone https://github.com/tu-usuario/StarStudy.git
+# entra a la carpeta del proyecto
+cd StarStudy
+# crea un entorno virtual (aisla las dependencias)
+python3 -m venv venv
+# activa el entorno virtual
+source venv/bin/activate
+# instala las librerias necesarias
+pip install -r requirements.txt
+# inicia el servidor
+python3 run.py
 ```
 
 Abrir http://127.0.0.1:8000/
