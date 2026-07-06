@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.utils import timezone
 from django.core.paginator import Paginator
 from datetime import timedelta
@@ -155,6 +156,7 @@ def task_complete(request, pk):
     task = get_object_or_404(Task, pk=pk)
 
     if task.assigned_to != request.user and task.assigned_by != request.user:
+        messages.error(request, 'No tenés permiso para completar esta tarea.')
         return redirect('task_list')
 
     task.is_completed = True
@@ -191,6 +193,7 @@ def comment_create(request, pk):
     task = get_object_or_404(Task, pk=pk)
 
     if task.assigned_to != request.user and task.assigned_by != request.user:
+        messages.error(request, 'No tenés permiso para comentar en esta tarea.')
         return redirect('task_list')
 
     if request.method == 'POST':
