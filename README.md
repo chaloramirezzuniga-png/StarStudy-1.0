@@ -52,11 +52,26 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 
 ## Instalación
 
+### Windows
+
+```powershell
+git clone https://github.com/tu-usuario/StarStudy.git
+cd StarStudy
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python run.py
+```
+
+### Linux / macOS
+
 ```bash
 git clone https://github.com/tu-usuario/StarStudy.git
 cd StarStudy
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-python run.py
+python3 run.py
 ```
 
 Abrir http://127.0.0.1:8000/
