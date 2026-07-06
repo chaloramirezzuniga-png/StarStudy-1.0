@@ -29,11 +29,19 @@ class RegisterForm(UserCreationForm):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
         role = cleaned_data.get('role')
+        code = cleaned_data.get('code', '').strip().upper()
+        if code and role == User.Role.STUDENT:
+            if not User.objects.filter(code=code).exclude(role=User.Role.STUDENT).exists():
+                raise forms.ValidationError('El código de invitación no es válido o ha expirado.')
         if email and role:
             if User.objects.filter(email=email, role=role).exists():
                 raise forms.ValidationError('Ya existe un usuario con ese correo y rol.')
-            if User.objects.filter(email=email, role=User.Role.STUDENT).exists() and role == User.Role.TEACHER:
-                raise forms.ValidationError('No podés registrarte como Profesor con un correo que ya usaste como Estudiante.')
+            existing_roles = set(User.objects.filter(email=email).values_list('role', flat=True))
+            if existing_roles and role not in existing_roles:
+                raise forms.ValidationError(
+                    'Este correo ya está registrado con otro rol. '
+                    'Usá un correo diferente para cada rol.'
+                )
         return cleaned_data
 
     def save(self, commit=True):

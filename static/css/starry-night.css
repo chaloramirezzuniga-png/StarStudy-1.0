@@ -155,11 +155,11 @@ textarea.form-control {
 }
 
 .text-danger {
-    color: #e0e0e0 !important;
+    color: #ef9a9a !important;
 }
 
-.text-danger strong, .text-danger li, .errorlist {
-    color: #e0e0e0 !important;
+.text-danger strong, .text-danger li {
+    color: #ef9a9a !important;
 }
 
 .errorlist {

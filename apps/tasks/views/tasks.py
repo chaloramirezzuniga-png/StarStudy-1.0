@@ -97,6 +97,9 @@ def task_detail(request, pk):
 
     can_assign = user.role == 'TEACHER' or user.role == 'STAFF' or user.role == 'PROGRAMMER'
     comments = task.comments.all()
+    comment_paginator = Paginator(comments, 10)
+    comment_page = request.GET.get('comment_page')
+    comments_page = comment_paginator.get_page(comment_page)
     form = CommentForm()
 
     context = {
@@ -105,7 +108,7 @@ def task_detail(request, pk):
         'now': timezone.now(),
         'urgent_date': timezone.now() + timedelta(days=3),
         'user_role': user.role,
-        'comments': comments,
+        'comments': comments_page,
         'form': form,
     }
 

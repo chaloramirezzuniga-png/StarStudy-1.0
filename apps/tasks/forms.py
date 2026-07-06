@@ -22,7 +22,7 @@ class TaskForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['deadline'].input_formats = ['%Y-%m-%dT%H:%M']
         if user and user.role != User.Role.STUDENT:
-            self.fields['assigned_to'].queryset = User.objects.exclude(role=user.role)
+            self.fields['assigned_to'].queryset = User.objects.filter(role=User.Role.STUDENT)
 
 
 class CommentForm(forms.ModelForm):

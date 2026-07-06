@@ -1,6 +1,9 @@
-from datetime import date, datetime, timedelta
+import logging
+from datetime import date, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
-from django.utils.timezone import now
+from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 scheduler = BackgroundScheduler()
 _started = False
@@ -10,14 +13,17 @@ def check_habit_notifications():
     from apps.habits.models import Habit
     from apps.accounts.models import Notification
 
-    today = date.today()
-    now_time = datetime.now().time()
-    window_start = (datetime.combine(today, now_time) - timedelta(minutes=1)).time()
-    window_end = (datetime.combine(today, now_time) + timedelta(minutes=1)).time()
+    now_dt = timezone.now()
+    today = now_dt.date()
+    now_time = now_dt.time()
+    window_start = (now_dt - timedelta(minutes=1)).time()
+    window_end = (now_dt + timedelta(minutes=1)).time()
 
     habits = Habit.objects.select_related('user').all()
 
     for habit in habits:
+        if habit.start_time == habit.end_time and habit.start_time.hour == 0 and habit.start_time.minute == 0:
+            continue
         for time_field, tipo in [(habit.start_time, 'inicio'), (habit.end_time, 'fin')]:
             if window_start <= time_field <= window_end:
                 notif_key = f"habito_{tipo}_{habit.pk}_{today}"
@@ -73,5 +79,5 @@ def start():
         scheduler.add_job(check_task_deadlines, 'interval', minutes=1, id='deadlines', replace_existing=True)
         scheduler.start()
         _started = True
-    except Exception:
-        pass
+    except Exception as e:
+        logger.exception('Error al iniciar el scheduler: %s', e)

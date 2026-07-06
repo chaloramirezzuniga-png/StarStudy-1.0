@@ -1,6 +1,9 @@
 import secrets
 from django.contrib.auth.models import AbstractUser
+from django.core.signing import Signer
 from django.db import models
+
+signer = Signer()
 
 
 def generate_code():
@@ -20,6 +23,17 @@ class User(AbstractUser):
     linked_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_students')
     github_username = models.CharField(max_length=100, blank=True, null=True)
     github_token = models.TextField(blank=True, null=True)
+
+    def set_github_token(self, raw_token):
+        self.github_token = signer.sign(raw_token) if raw_token else None
+
+    def get_github_token(self):
+        if not self.github_token:
+            return None
+        try:
+            return signer.unsign(self.github_token)
+        except Exception:
+            return None
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'role']

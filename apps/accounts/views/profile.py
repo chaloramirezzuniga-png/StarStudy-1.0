@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator
 from apps.accounts.models import User, Notification
 from apps.tasks.models import Task
 
@@ -75,7 +76,10 @@ def github_disconnect(request):
 @login_required
 def notification_list(request):
     notifs = request.user.notifications.all()
-    context = {'notifications': notifs}
+    paginator = Paginator(notifs, 20)
+    page = request.GET.get('page')
+    notifs_page = paginator.get_page(page)
+    context = {'notifications': notifs_page}
     return render(request, 'accounts/notification_list.html', context)
 
 
