@@ -53,23 +53,10 @@ Diseñada para conectar **estudiantes**, **profesores**, **personal administrati
 ## Instalación
 
 ```bash
-# Clonar
 git clone https://github.com/tu-usuario/StarStudy.git
 cd StarStudy
-
-# Entorno virtual
-python -m venv venv
-venv\Scripts\activate   # Windows
-# source venv/bin/activate   # Linux/macOS
-
-# Dependencias
 pip install -r requirements.txt
-
-# Base de datos
-python manage.py migrate
-
-# Iniciar servidor
-python manage.py runserver
+python run.py
 ```
 
 Abrir http://127.0.0.1:8000/
