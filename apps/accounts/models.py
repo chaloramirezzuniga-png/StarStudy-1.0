@@ -27,6 +27,8 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.code and self.role != self.Role.STUDENT:
             self.code = generate_code()
+            while User.objects.filter(code=self.code).exists():
+                self.code = generate_code()
         super().save(*args, **kwargs)
 
     def unread_notifications_count(self):

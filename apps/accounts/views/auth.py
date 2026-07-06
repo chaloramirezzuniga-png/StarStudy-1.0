@@ -28,7 +28,7 @@ def register(request):
                         user.save(update_fields=['linked_to'])
                 return redirect('login')
             except IntegrityError:
-                messages.error(request, 'El correo electrónico ya está registrado.')
+                messages.error(request, 'Error al registrar. Intentalo de nuevo.')
     else:
         form = RegisterForm(initial={'code': initial_code})
 
