@@ -5,5 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('core.roles.urls')),
+    path('', include('apps.accounts.urls')),
+    path('tasks/', include('apps.tasks.urls')),
+    path('habitos/', include('apps.habits.urls')),
+    path('schedule/', include('apps.schedule.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

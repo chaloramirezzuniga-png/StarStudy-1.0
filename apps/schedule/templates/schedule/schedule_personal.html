@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% if user_role == 'PROGRAMMER' %}
+<style>
+  .map-container {
+    background: rgba(5, 8, 22, 0.6);
+    border: 2px solid rgba(255, 213, 79, 0.15);
+    border-radius: 16px;
+    padding: 20px 16px 16px 16px;
+    position: relative;
+    overflow-x: auto;
+  }
+
+  .map-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 4px;
+    min-width: 700px;
+  }
+  .map-table th {
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 4px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 213, 79, 0.1);
+  }
+  .map-table td {
+    padding: 4px;
+    min-width: 100px;
+    vertical-align: top;
+  }
+  .map-slot {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem;
+    text-align: center;
+    vertical-align: middle;
+    width: 60px;
+    font-family: monospace;
+    letter-spacing: 1px;
+  }
+  .map-location {
+    background: rgba(10, 14, 39, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin: 2px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .map-location:hover {
+    transform: scale(1.03);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(255, 213, 79, 0.1), inset 0 0 20px rgba(255, 213, 79, 0.02);
+  }
+  .map-location-subject {
+    border-left: 3px solid rgba(33, 150, 243, 0.6);
+  }
+  .map-location-subject:hover {
+    border-left-color: #42a5f5;
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.15), inset 0 0 20px rgba(33, 150, 243, 0.03);
+  }
+  .map-location-break {
+    border-left: 3px solid rgba(76, 175, 80, 0.5);
+  }
+  .map-location-break:hover {
+    border-left-color: #66bb6a;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.15), inset 0 0 20px rgba(76, 175, 80, 0.03);
+  }
+  .map-location-lunch {
+    border-left: 3px solid rgba(255, 152, 0, 0.6);
+  }
+  .map-location-lunch:hover {
+    border-left-color: #ffa726;
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.15), inset 0 0 20px rgba(255, 152, 0, 0.03);
+  }
+  .map-location strong {
+    display: block;
+    color: #e0e0e0;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .map-location small {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.6rem;
+  }
+  .map-location .map-pin {
+    position: absolute;
+    top: -4px;
+    right: 6px;
+    font-size: 0.7rem;
+  }
+  .map-empty {
+    color: rgba(255, 255, 255, 0.05);
+    font-size: 0.7rem;
+    text-align: center;
+    display: block;
+    padding: 8px 0;
+  }
+  .map-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .map-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+</style>
+{% endif %}
+
+<h4>
+  {% if user_role == 'PROGRAMMER' %}
+    <i class="bi bi-geo-alt me-2"></i>Mapa {{ schedule_name }}
+  {% else %}
+    Horario {{ schedule_name }}
+  {% endif %}
+</h4>
+
+{% if not readonly %}
+<button class="btn btn-primary btn-sm mb-3" data-bs-toggle="collapse" data-bs-target="#addForm">
+  + {% if user_role == 'PROGRAMMER' %}Agregar ubicación{% else %}Agregar entrada{% endif %}
+</button>
+
+<div class="collapse mb-3" id="addForm">
+    <div class="card card-body">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="add" value="1">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-2">{{ form.day.label_tag }}{{ form.day }}</div>
+                <div class="col-md-2">{{ form.start_time.label_tag }}{{ form.start_time }}</div>
+                <div class="col-md-2">{{ form.end_time.label_tag }}{{ form.end_time }}</div>
+                <div class="col-md-3">{{ form.title.label_tag }}{{ form.title }}</div>
+                <div class="col-md-2">
+  {% if user_role == 'PROGRAMMER' %}
+    <label class="form-label">Tipo</label>
+  {% else %}
+    {{ form.entry_type.label_tag }}
+  {% endif %}
+  {{ form.entry_type }}
+</div>
+                <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">Guardar</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="schedule-wrapper">
+{% if user_role == 'PROGRAMMER' %}
+<div class="map-container">
+  <table class="map-table">
+    <thead>
+      <tr>
+        <th style="width: 60px;"></th>
+        {% for day in days %}
+        <th><i class="bi bi-geo me-1"></i>{{ day.label }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for slot, cells in rows %}
+      <tr>
+        <td class="map-slot">{{ slot }}</td>
+        {% for entries in cells %}
+        <td>
+          {% for e in entries %}
+          <div class="map-location map-location-{{ e.entry_type|lower }}" role="button"
+               data-bs-toggle="modal" data-bs-target="#entryModal{{ e.pk }}" title="Ver detalle">
+            <span class="map-pin">
+              {% if e.entry_type == 'SUBJECT' %}📚{% elif e.entry_type == 'BREAK' %}🌿{% else %}🍽️{% endif %}
+            </span>
+            <strong>{{ e.title }}</strong>
+            <small>{{ e.start_time|time:'H:i' }} – {{ e.end_time|time:'H:i' }}</small>
+            {% if not readonly %}
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="delete_id" value="{{ e.pk }}">
+              <button type="submit" class="btn-del" onclick="event.stopPropagation(); return confirm('¿Eliminar?')">&times;</button>
+            </form>
+            {% endif %}
+          </div>
+          {% empty %}
+          <span class="map-empty">—</span>
+          {% endfor %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-muted py-4 text-center">No hay ubicaciones en {{ title }}.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="map-legend">
+    <span class="map-legend-item">
+      <span class="map-legend-dot" style="background: rgba(33, 150, 243, 0.6);"></span> Materia
+    </span>
+    <span class="map-legend-item">
+      <span class="map-legend-dot" style="background: rgba(76, 175, 80, 0.5);"></span> Descanso
+    </span>
+    <span class="map-legend-item">
+      <span class="map-legend-dot" style="background: rgba(255, 152, 0, 0.6);"></span> Comida
+    </span>
+  </div>
+</div>
+{% else %}
+{% include 'schedule/_schedule_table.html' with rows=rows title=schedule_name %}
+{% endif %}
+</div>
+
+{% for e in all_entries %}
+<div class="modal fade" id="entryModal{{ e.pk }}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content entry-modal entry-modal-{{ e.entry_type|lower }}">
+            <div class="modal-body text-center py-4 position-relative">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar" style="position:absolute; top:12px; right:12px;"></button>
+                <h5 class="mb-1" style="color: var(--accent);">{{ e.title }}</h5>
+                <p class="mb-0" style="color: rgba(255,255,255,0.6); font-size: 0.9rem;">
+                    {{ e.start_time|time:'H:i' }} – {{ e.end_time|time:'H:i' }}
+                </p>
+                <small style="color: rgba(255,255,255,0.35);">
+                    {% if e.entry_type == 'SUBJECT' %}Materia{% elif e.entry_type == 'BREAK' %}{% if user_role == 'PROGRAMMER' %}Descanso{% else %}Recreo{% endif %}{% else %}{% if user_role == 'PROGRAMMER' %}Comida{% else %}Almuerzo{% endif %}{% endif %}
+                    · {{ e.get_day_display }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+document.querySelectorAll('.modal').forEach(function(m) {
+    var timer = null;
+
+    m.addEventListener('shown.bs.modal', function() {
+        timer = setTimeout(function() {
+            bootstrap.Modal.getInstance(m).hide();
+        }, 3000);
+    });
+
+    m.addEventListener('hidden.bs.modal', function() {
+        if (timer) clearTimeout(timer);
+        if (document.activeElement) document.activeElement.blur();
+    });
+});
+</script>
+{% endblock %}

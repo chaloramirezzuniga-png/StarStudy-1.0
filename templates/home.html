@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Tarjetas de estadísticas -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h6>Pendientes</h6>
+                <h2 class="mb-0">{{ pending }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-danger">
+            <div class="card-body">
+                <h6>Vencidas</h6>
+                <h2 class="mb-0">{{ overdue }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h6>Entregadas</h6>
+                <h2 class="mb-0">{{ completed_count }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body text-center">
+                <h6>Nivel {{ level }}</h6>
+
+                <div class="progress" style="height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width: {{ xp }}0%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 6px;"
+                         aria-valuenow="{{ xp }}" aria-valuemin="0" aria-valuemax="{{ next_level_xp }}">
+                    </div>
+                </div>
+
+                <small class="text-muted">{{ xp }}/{{ next_level_xp }} tareas para siguiente nivel</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Tareas recientes y entregadas -->
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">
+                Últimas tareas
+            </div>
+            <div class="card-body">
+
+                {% if recent %}
+
+                <ul class="list-unstyled mb-0">
+                    {% for task in recent %}
+                    <li class="mb-2 pb-2 border-bottom">
+                        <a href="{% url 'task_detail' task.pk %}" class="text-decoration-none">
+
+                            {% if task.importance == 'CRITICAL' %}
+                                <span class="badge bg-danger">Crítica</span>
+                            {% elif task.importance == 'HIGH' %}
+                                <span class="badge bg-warning text-dark">Alta</span>
+                            {% elif task.importance == 'MEDIUM' %}
+                                <span class="badge bg-info text-dark">Media</span>
+                            {% else %}
+                                <span class="badge bg-success">Baja</span>
+                            {% endif %}
+
+                            {{ task.title }}
+
+                        </a>
+                        <small class="text-muted d-block">{{ task.deadline|date:'d/m/Y H:i' }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                {% else %}
+                <p class="text-muted mb-0">No hay tareas.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header">
+                Faltan entregar
+            </div>
+            <div class="card-body">
+
+                {% if recent_pending %}
+
+                <ul class="list-unstyled mb-0">
+                    {% for task in recent_pending %}
+                    <li class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-center">
+
+                        <div>
+                            {{ task.title }}
+                            <small class="text-muted d-block">
+                                <i class="bi bi-hourglass-split me-1"></i>
+                                Vence: {{ task.deadline|date:'d/m/Y H:i' }}
+                                {% if task.deadline < now %}
+                                    <span class="text-danger">(Vencida)</span>
+                                {% endif %}
+                            </small>
+                        </div>
+
+                        <span>
+                            {% if task.importance == 'CRITICAL' %}
+                                <span class="badge bg-danger">Crítica</span>
+                            {% elif task.importance == 'HIGH' %}
+                                <span class="badge bg-warning text-dark">Alta</span>
+                            {% elif task.importance == 'MEDIUM' %}
+                                <span class="badge bg-info text-dark">Media</span>
+                            {% else %}
+                                <span class="badge bg-success">Baja</span>
+                            {% endif %}
+                        </span>
+
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                {% else %}
+                <p class="text-muted mb-0">Todas las tareas están entregadas.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
