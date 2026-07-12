@@ -12,13 +12,13 @@ class Task(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    importance = models.CharField(max_length=20, choices=Importance.choices, default=Importance.MEDIUM)
-    deadline = models.DateTimeField()
+    importance = models.CharField(max_length=20, choices=Importance.choices, default=Importance.MEDIUM, db_index=True)
+    deadline = models.DateTimeField(db_index=True)
     assigned_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='assigned_tasks')
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='my_tasks')
-    is_completed = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False, db_index=True)
     completed_at = models.DateTimeField(null=True, blank=True)
-    is_personal = models.BooleanField(default=False)
+    is_personal = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     file = models.FileField(upload_to='task_files/', blank=True, null=True)
@@ -34,6 +34,11 @@ class Task(models.Model):
                 output_field=IntegerField(),
             ),
             'deadline',
+        ]
+        indexes = [
+            models.Index(fields=['assigned_to', 'is_personal', 'is_completed'], name='idx_task_to_pers_comp'),
+            models.Index(fields=['assigned_by', 'is_personal', 'is_completed'], name='idx_task_by_pers_comp'),
+            models.Index(fields=['deadline', 'is_completed'], name='idx_task_deadline_comp'),
         ]
 
     def __str__(self):

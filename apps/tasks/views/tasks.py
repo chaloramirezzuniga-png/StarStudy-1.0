@@ -4,191 +4,113 @@ from django.contrib import messages
 from django.utils import timezone
 from django.core.paginator import Paginator
 from datetime import timedelta
-from apps.tasks.models import Task, Comment
-from apps.accounts.models import Notification
+from apps.tasks.models import Task
 from apps.tasks.forms import TaskForm, CommentForm
+from apps.tasks.services import (
+    get_task_queryset, apply_filters, create_task,
+    complete_task, delete_task, add_comment,
+)
+from apps.accounts.decorators import role_required
 
 
 @login_required
 def task_list(request):
     user = request.user
     now = timezone.now()
+    is_personal = request.GET.get('personal') == '1'
 
-    if user.role == 'TEACHER' or user.role == 'STAFF' or user.role == 'PROGRAMMER':
-        tasks = Task.objects.filter(assigned_by=user, is_personal=False)
-    else:
-        tasks = Task.objects.filter(assigned_to=user, is_personal=False)
-
-    importance = request.GET.get('importance')
-    if importance:
-        tasks = tasks.filter(importance=importance)
-
-    status = request.GET.get('status')
-    if status == 'pending':
-        tasks = tasks.filter(is_completed=False)
-    elif status == 'completed':
-        tasks = tasks.filter(is_completed=True)
-    elif status == 'overdue':
-        tasks = tasks.filter(is_completed=False, deadline__lt=now)
+    tasks = get_task_queryset(user, is_personal=is_personal)
+    tasks = apply_filters(tasks, request.GET, request.GET.get('status'), now)
 
     paginator = Paginator(tasks, 10)
-    page = request.GET.get('page')
-    tasks_page = paginator.get_page(page)
-
-    can_assign = user.role == 'TEACHER' or user.role == 'STAFF' or user.role == 'PROGRAMMER'
+    tasks_page = paginator.get_page(request.GET.get('page'))
 
     context = {
         'tasks': tasks_page,
-        'can_assign': can_assign,
+        'can_assign': user.role in ('TEACHER', 'STAFF', 'PROGRAMMER'),
         'now': now,
         'urgent_date': now + timedelta(days=3),
         'importance_choices': Task.Importance.choices,
-        'is_personal': False,
+        'is_personal': is_personal,
         'user_role': user.role,
     }
-
     return render(request, 'tasks/task_list.html', context)
 
 
 @login_required
 def task_personal(request):
-    user = request.user
-    now = timezone.now()
-
-    tasks = Task.objects.filter(assigned_by=user, is_personal=True)
-
-    importance = request.GET.get('importance')
-    if importance:
-        tasks = tasks.filter(importance=importance)
-
-    status = request.GET.get('status')
-    if status == 'pending':
-        tasks = tasks.filter(is_completed=False)
-    elif status == 'completed':
-        tasks = tasks.filter(is_completed=True)
-    elif status == 'overdue':
-        tasks = tasks.filter(is_completed=False, deadline__lt=now)
-
-    paginator = Paginator(tasks, 10)
-    page = request.GET.get('page')
-    tasks_page = paginator.get_page(page)
-
-    context = {
-        'tasks': tasks_page,
-        'can_assign': True,
-        'now': now,
-        'urgent_date': now + timedelta(days=3),
-        'importance_choices': Task.Importance.choices,
-        'is_personal': True,
-        'user_role': user.role,
-    }
-
-    return render(request, 'tasks/task_list.html', context)
+    return task_list(request)
 
 
 @login_required
 def task_detail(request, pk):
     user = request.user
 
-    if user.role == 'TEACHER' or user.role == 'STAFF' or user.role == 'PROGRAMMER':
-        task = get_object_or_404(Task, pk=pk, assigned_by=user)
+    if user.role in ('TEACHER', 'STAFF', 'PROGRAMMER'):
+        task = get_object_or_404(
+            Task.objects.select_related('assigned_to', 'assigned_by'),
+            pk=pk, assigned_by=user,
+        )
     else:
-        task = get_object_or_404(Task, pk=pk, assigned_to=user)
+        task = get_object_or_404(
+            Task.objects.select_related('assigned_to', 'assigned_by'),
+            pk=pk, assigned_to=user,
+        )
 
-    can_assign = user.role == 'TEACHER' or user.role == 'STAFF' or user.role == 'PROGRAMMER'
-    comments = task.comments.all()
-    comment_paginator = Paginator(comments, 10)
-    comment_page = request.GET.get('comment_page')
-    comments_page = comment_paginator.get_page(comment_page)
-    form = CommentForm()
+    comments = task.comments.select_related('user').all()
+    comments_page = Paginator(comments, 10).get_page(request.GET.get('comment_page'))
 
     context = {
         'task': task,
-        'can_assign': can_assign,
+        'can_assign': user.role in ('TEACHER', 'STAFF', 'PROGRAMMER'),
         'now': timezone.now(),
         'urgent_date': timezone.now() + timedelta(days=3),
         'user_role': user.role,
         'comments': comments_page,
-        'form': form,
+        'form': CommentForm(),
     }
-
     return render(request, 'tasks/task_detail.html', context)
 
 
-@login_required
+@role_required('TEACHER', 'STAFF', 'PROGRAMMER')
 def task_create(request):
     personal = request.GET.get('personal') == '1'
+    user = request.user
 
     if request.method == 'POST':
-        form = TaskForm(request.POST, request.FILES, user=request.user)
-
+        form = TaskForm(request.POST, request.FILES, user=user)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.assigned_by = request.user
-
-            if personal:
-                task.is_personal = True
-                task.assigned_to = request.user
-
-            task.save()
-
-            if not personal and task.assigned_to != request.user:
-                Notification.objects.create(
-                    user=task.assigned_to,
-                    message=f'{request.user.get_full_name() or request.user.email} te asignó: {task.title}',
-                    link=f'/tasks/{task.pk}/',
-                )
-
-            if personal:
-                return redirect('task_personal')
-            else:
-                return redirect('task_detail', pk=task.pk)
+            task = create_task(form, user, is_personal=personal)
+            return redirect('task_personal' if personal else 'task_detail', pk=task.pk)
     else:
-        form = TaskForm(user=request.user)
+        form = TaskForm(user=user)
 
-    context = {
-        'form': form,
-        'is_personal': personal,
-    }
-
-    return render(request, 'tasks/task_form.html', context)
+    return render(request, 'tasks/task_form.html', {'form': form, 'is_personal': personal})
 
 
 @login_required
 def task_complete(request, pk):
+    if request.method != 'POST':
+        return redirect('task_list')
+
     task = get_object_or_404(Task, pk=pk)
 
     if task.assigned_to != request.user and task.assigned_by != request.user:
         messages.error(request, 'No tenés permiso para completar esta tarea.')
         return redirect('task_list')
 
-    task.is_completed = True
-    task.completed_at = timezone.now()
-    task.save()
-
-    if not task.is_personal:
-        Notification.objects.create(
-            user=task.assigned_by,
-            message=f'{request.user.get_full_name() or request.user.email} completó: {task.title}',
-            link=f'/tasks/{task.pk}/',
-        )
-
-    if task.is_personal:
-        return redirect('task_personal')
-    else:
-        return redirect('task_list')
+    complete_task(task, request.user)
+    return redirect('task_personal' if task.is_personal else 'task_list')
 
 
 @login_required
 def task_delete(request, pk):
-    task = get_object_or_404(Task, pk=pk, assigned_by=request.user)
-    personal = task.is_personal
-    task.delete()
-
-    if personal:
-        return redirect('task_personal')
-    else:
+    if request.method != 'POST':
         return redirect('task_list')
+
+    task = get_object_or_404(Task, pk=pk, assigned_by=request.user)
+    personal, _ = delete_task(task)
+    return redirect('task_personal' if personal else 'task_list')
 
 
 @login_required
@@ -202,9 +124,6 @@ def comment_create(request, pk):
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
-            comment = form.save(commit=False)
-            comment.task = task
-            comment.user = request.user
-            comment.save()
+            add_comment(task, request.user, form.cleaned_data['text'])
 
     return redirect('task_detail', pk=pk)

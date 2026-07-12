@@ -1,107 +1,54 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from apps.accounts.models import User
 from apps.schedule.models import ScheduleEntry
 from apps.schedule.forms import ScheduleEntryForm
-from apps.schedule.utils import build_schedule_table
+from apps.schedule.services import get_schedule_context, add_schedule_entry, delete_schedule_entry
+from apps.accounts.decorators import role_required
 
 
 @login_required
 def schedule_personal(request):
     user = request.user
-    day_values = [d.value for d in ScheduleEntry.Day]
 
     if request.method == 'POST' and 'delete_id' in request.POST:
-        ScheduleEntry.objects.filter(pk=request.POST['delete_id'], user=user).delete()
+        delete_schedule_entry(request.POST['delete_id'], user)
         return redirect('schedule_personal')
 
     form = ScheduleEntryForm(request.POST or None, user=user)
-    if request.method == 'POST' and 'add' in request.POST:
-        if form.is_valid():
-            entry = form.save(commit=False)
-            entry.user = user
-            entry.schedule_type = ScheduleEntry.ScheduleType.PERSONAL
-            entry.save()
-            return redirect('schedule_personal')
+    if request.method == 'POST' and 'add' in request.POST and form.is_valid():
+        add_schedule_entry(user, form, ScheduleEntry.ScheduleType.PERSONAL)
+        return redirect('schedule_personal')
 
-    all_entries = list(ScheduleEntry.objects.filter(user=user, schedule_type=ScheduleEntry.ScheduleType.PERSONAL))
-    rows = build_schedule_table(all_entries, day_values)
-
-    context = {
-        'form': form,
-        'rows': rows,
-        'days': list(ScheduleEntry.Day),
-        'all_entries': all_entries,
-        'schedule_name': 'Personal',
-        'readonly': False,
-        'user_role': user.role,
-    }
-
+    context = get_schedule_context(user, ScheduleEntry.ScheduleType.PERSONAL, 'Personal')
+    context['form'] = form
     return render(request, 'schedule/schedule_personal.html', context)
 
 
 @login_required
 def schedule_student_course(request):
-    user = request.user
-    teacher = user.linked_to
-
+    teacher = request.user.linked_to
     if not teacher:
         messages.error(request, 'No estás vinculado a ningún profesor.')
         return redirect('schedule_personal')
 
-    day_values = [d.value for d in ScheduleEntry.Day]
-
-    all_entries = list(ScheduleEntry.objects.filter(
-        user=teacher,
-        schedule_type=ScheduleEntry.ScheduleType.COURSE
-    ))
-    rows = build_schedule_table(all_entries, day_values)
-
-    context = {
-        'rows': rows,
-        'days': list(ScheduleEntry.Day),
-        'all_entries': all_entries,
-        'schedule_name': 'del Curso',
-        'readonly': True,
-        'user_role': user.role,
-    }
-
+    context = get_schedule_context(teacher, ScheduleEntry.ScheduleType.COURSE, 'del Curso', readonly=True)
     return render(request, 'schedule/schedule_personal.html', context)
 
 
-@login_required
+@role_required('TEACHER')
 def schedule_course(request):
-    if request.user.role != User.Role.TEACHER:
-        return redirect('schedule_student_course')
-
     user = request.user
-    day_values = [d.value for d in ScheduleEntry.Day]
 
     if request.method == 'POST' and 'delete_id' in request.POST:
-        ScheduleEntry.objects.filter(pk=request.POST['delete_id'], user=user).delete()
+        delete_schedule_entry(request.POST['delete_id'], user)
         return redirect('schedule_course')
 
     form = ScheduleEntryForm(request.POST or None, user=user)
-    if request.method == 'POST' and 'add' in request.POST:
-        if form.is_valid():
-            entry = form.save(commit=False)
-            entry.user = user
-            entry.schedule_type = ScheduleEntry.ScheduleType.COURSE
-            entry.save()
-            return redirect('schedule_course')
+    if request.method == 'POST' and 'add' in request.POST and form.is_valid():
+        add_schedule_entry(user, form, ScheduleEntry.ScheduleType.COURSE)
+        return redirect('schedule_course')
 
-    all_entries = list(ScheduleEntry.objects.filter(user=user, schedule_type=ScheduleEntry.ScheduleType.COURSE))
-    rows = build_schedule_table(all_entries, day_values)
-
-    context = {
-        'form': form,
-        'rows': rows,
-        'days': list(ScheduleEntry.Day),
-        'all_entries': all_entries,
-        'schedule_name': 'del Curso',
-        'readonly': False,
-        'user_role': user.role,
-    }
-
+    context = get_schedule_context(user, ScheduleEntry.ScheduleType.COURSE, 'del Curso')
+    context['form'] = form
     return render(request, 'schedule/schedule_personal.html', context)

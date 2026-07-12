@@ -36,12 +36,17 @@ class ScheduleEntryForm(forms.ModelForm):
         if start_time and end_time and end_time <= start_time:
             raise forms.ValidationError('La hora de fin debe ser posterior a la hora de inicio.')
         day = cleaned_data.get('day')
+        schedule_type = cleaned_data.get('schedule_type')
         if start_time and end_time and day and self._user:
-            overlaps = ScheduleEntry.objects.filter(
-                user=self._user, day=day,
-                start_time__lt=end_time,
-                end_time__gt=start_time,
-            )
+            filter_kwargs = {
+                'user': self._user,
+                'day': day,
+                'start_time__lt': end_time,
+                'end_time__gt': start_time,
+            }
+            if schedule_type:
+                filter_kwargs['schedule_type'] = schedule_type
+            overlaps = ScheduleEntry.objects.filter(**filter_kwargs)
             if self.instance.pk:
                 overlaps = overlaps.exclude(pk=self.instance.pk)
             if overlaps.exists():

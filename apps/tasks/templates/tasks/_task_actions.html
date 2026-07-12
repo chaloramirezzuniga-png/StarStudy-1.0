@@ -1,0 +1,17 @@
+{% if not task.is_completed and task.assigned_to == user %}
+<form method="post" action="{% url 'task_complete' task.pk %}" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-success {{ btn_size|default:'btn-sm' }}">
+        Completar
+    </button>
+</form>
+{% endif %}
+{% if task.assigned_by == user %}
+<form method="post" action="{% url 'task_delete' task.pk %}" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger {{ btn_size|default:'btn-sm' }}"
+       onclick="return confirm('¿Eliminar?')">
+        Eliminar
+    </button>
+</form>
+{% endif %}

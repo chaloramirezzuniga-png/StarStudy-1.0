@@ -10,6 +10,9 @@ django.setup()
 print(">>> Ejecutando migraciones...")
 call_command('migrate', verbosity=0)
 
+from apps.schedule.scheduler import start as start_scheduler
+start_scheduler()
+
 url = 'http://127.0.0.1:8000'
 print(f">>> Abriendo {url} ...")
 threading.Timer(1.5, lambda: webbrowser.open(url)).start()

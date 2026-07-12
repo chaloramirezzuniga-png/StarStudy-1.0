@@ -1,113 +1,100 @@
 {% extends 'base.html' %}
+{% block title %}Inicio - StarStudy{% endblock %}
 {% block content %}
 
-<!-- Tarjetas de estadísticas -->
-<div class="row g-3 mb-4">
+{% if not user.linked_to and user.role == 'STUDENT' %}
+<div class="welcome-banner">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <i class="bi bi-link-45deg" style="font-size: 2.5rem; color: var(--accent);"></i>
+        <div>
+            <h5 class="mb-1" style="color: var(--accent);">Bienvenido a StarStudy</h5>
+            <p class="mb-2" style="color: rgba(255,255,255,0.6);">Para empezar, vinculate a tu profesor con su código.</p>
+            <a href="{% url 'profile' %}" class="btn btn-primary btn-sm">
+                <i class="bi bi-person-gear me-1"></i>Ir a mi perfil
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
 
-    <div class="col-md-3">
+<div class="row g-2 g-md-3 mb-4">
+    <div class="col-6 col-md-3">
         <div class="card text-bg-primary">
-            <div class="card-body">
-                <h6>Pendientes</h6>
+            <div class="card-body py-2 py-md-3">
+                <h6 class="mb-1 mb-md-0">Pendientes</h6>
                 <h2 class="mb-0">{{ pending }}</h2>
             </div>
         </div>
     </div>
-
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card text-bg-danger">
-            <div class="card-body">
-                <h6>Vencidas</h6>
+            <div class="card-body py-2 py-md-3">
+                <h6 class="mb-1 mb-md-0">Vencidas</h6>
                 <h2 class="mb-0">{{ overdue }}</h2>
             </div>
         </div>
     </div>
-
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card text-bg-success">
-            <div class="card-body">
-                <h6>Entregadas</h6>
+            <div class="card-body py-2 py-md-3">
+                <h6 class="mb-1 mb-md-0">Entregadas</h6>
                 <h2 class="mb-0">{{ completed_count }}</h2>
             </div>
         </div>
     </div>
-
-    <div class="col-md-3">
+    <div class="col-6 col-md-3">
         <div class="card text-bg-primary">
-            <div class="card-body text-center">
-                <h6>Nivel {{ level }}</h6>
-
-                <div class="progress" style="height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px;">
+            <div class="card-body text-center py-2 py-md-3">
+                <h6 class="mb-1 mb-md-0">Nivel {{ level }}</h6>
+                <div class="progress mt-1 mt-md-0" style="height: 12px; background: rgba(255, 255, 255, 0.1); border-radius: 6px;">
                     <div class="progress-bar" role="progressbar"
                          style="width: {{ xp }}0%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 6px;"
                          aria-valuenow="{{ xp }}" aria-valuemin="0" aria-valuemax="{{ next_level_xp }}">
                     </div>
                 </div>
-
                 <small class="text-muted">{{ xp }}/{{ next_level_xp }} tareas para siguiente nivel</small>
             </div>
         </div>
     </div>
-
 </div>
 
-<!-- Tareas recientes y entregadas -->
-<div class="row">
-
+<div class="row g-3">
     <div class="col-md-6">
         <div class="card mb-3">
-            <div class="card-header">
-                Últimas tareas
-            </div>
+            <div class="card-header">Últimas tareas</div>
             <div class="card-body">
-
                 {% if recent %}
-
                 <ul class="list-unstyled mb-0">
                     {% for task in recent %}
                     <li class="mb-2 pb-2 border-bottom">
-                        <a href="{% url 'task_detail' task.pk %}" class="text-decoration-none">
-
-                            {% if task.importance == 'CRITICAL' %}
-                                <span class="badge bg-danger">Crítica</span>
-                            {% elif task.importance == 'HIGH' %}
-                                <span class="badge bg-warning text-dark">Alta</span>
-                            {% elif task.importance == 'MEDIUM' %}
-                                <span class="badge bg-info text-dark">Media</span>
-                            {% else %}
-                                <span class="badge bg-success">Baja</span>
-                            {% endif %}
-
-                            {{ task.title }}
-
+                        <a href="{% url 'task_detail' task.pk %}" class="text-decoration-none d-flex flex-wrap align-items-center gap-1">
+                            {% include 'tasks/_importance_badge.html' with task=task %}
+                            <span>{{ task.title }}</span>
                         </a>
                         <small class="text-muted d-block">{{ task.deadline|date:'d/m/Y H:i' }}</small>
                     </li>
                     {% endfor %}
                 </ul>
-
                 {% else %}
-                <p class="text-muted mb-0">No hay tareas.</p>
+                <div class="empty-state">
+                    <i class="bi bi-clipboard-check"></i>
+                    <h5>Sin tareas recientes</h5>
+                    <p>Acá van a aparecer tus tareas más importantes.</p>
+                </div>
                 {% endif %}
-
             </div>
         </div>
     </div>
-
     <div class="col-md-6">
         <div class="card mb-3">
-            <div class="card-header">
-                Faltan entregar
-            </div>
+            <div class="card-header">Faltan entregar</div>
             <div class="card-body">
-
                 {% if recent_pending %}
-
                 <ul class="list-unstyled mb-0">
                     {% for task in recent_pending %}
-                    <li class="mb-2 pb-2 border-bottom d-flex justify-content-between align-items-center">
-
+                    <li class="mb-2 pb-2 border-bottom">
                         <div>
-                            {{ task.title }}
+                            <span>{{ task.title }}</span>
                             <small class="text-muted d-block">
                                 <i class="bi bi-hourglass-split me-1"></i>
                                 Vence: {{ task.deadline|date:'d/m/Y H:i' }}
@@ -116,31 +103,22 @@
                                 {% endif %}
                             </small>
                         </div>
-
-                        <span>
-                            {% if task.importance == 'CRITICAL' %}
-                                <span class="badge bg-danger">Crítica</span>
-                            {% elif task.importance == 'HIGH' %}
-                                <span class="badge bg-warning text-dark">Alta</span>
-                            {% elif task.importance == 'MEDIUM' %}
-                                <span class="badge bg-info text-dark">Media</span>
-                            {% else %}
-                                <span class="badge bg-success">Baja</span>
-                            {% endif %}
-                        </span>
-
+                        <div class="mt-1">
+                            {% include 'tasks/_importance_badge.html' with task=task %}
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
-
                 {% else %}
-                <p class="text-muted mb-0">Todas las tareas están entregadas.</p>
+                <div class="empty-state">
+                    <i class="bi bi-check-circle"></i>
+                    <h5>Todo entregado</h5>
+                    <p>No tenés tareas pendientes por ahora.</p>
+                </div>
                 {% endif %}
-
             </div>
         </div>
     </div>
-
 </div>
 
 {% endblock %}

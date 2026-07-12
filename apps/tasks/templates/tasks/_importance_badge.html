@@ -1,0 +1,9 @@
+{% if task.importance == 'CRITICAL' %}
+    <span class="badge bg-danger {% if extra_class %}{{ extra_class }}{% endif %}">{{ label|default:"Crítica" }}</span>
+{% elif task.importance == 'HIGH' %}
+    <span class="badge bg-warning text-dark {% if extra_class %}{{ extra_class }}{% endif %}">{{ label|default:"Alta" }}</span>
+{% elif task.importance == 'MEDIUM' %}
+    <span class="badge bg-info text-dark {% if extra_class %}{{ extra_class }}{% endif %}">{{ label|default:"Media" }}</span>
+{% else %}
+    <span class="badge bg-success {% if extra_class %}{{ extra_class }}{% endif %}">{{ label|default:"Baja" }}</span>
+{% endif %}

@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% block title %}{{ task.title }} - StarStudy{% endblock %}
 {% block content %}
 
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-12 col-md-8 col-lg-6">
         <div class="card">
             <div class="card-header d-flex justify-content-between">
                 <span>Detalle de tarea</span>
@@ -17,15 +18,7 @@
             <div class="card-body">
                 <h4>{{ task.title }}</h4>
 
-                {% if task.importance == 'CRITICAL' %}
-                    <span class="badge bg-danger mb-3">Crítica</span>
-                {% elif task.importance == 'HIGH' %}
-                    <span class="badge bg-warning text-dark mb-3">Alta</span>
-                {% elif task.importance == 'MEDIUM' %}
-                    <span class="badge bg-info text-dark mb-3">Media</span>
-                {% else %}
-                    <span class="badge bg-success mb-3">Baja</span>
-                {% endif %}
+                {% include 'tasks/_importance_badge.html' with task=task extra_class='mb-3' %}
 
                 {% if task.is_personal %}
                     <span class="badge bg-info ms-1">Personal</span>
@@ -75,19 +68,8 @@
 
                 <hr>
 
-                <div class="d-flex gap-2">
-                    {% if not task.is_completed and task.assigned_to == user %}
-                        <a href="{% url 'task_complete' task.pk %}" class="btn btn-success">
-                            Marcar completada
-                        </a>
-                    {% endif %}
-
-                    {% if task.assigned_by == user %}
-                        <a href="{% url 'task_delete' task.pk %}" class="btn btn-danger"
-                           onclick="return confirm('¿Eliminar?')">
-                            Eliminar
-                        </a>
-                    {% endif %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% include 'tasks/_task_actions.html' with task=task btn_size='btn' %}
                 </div>
             </div>
         </div>
@@ -105,7 +87,10 @@
                     <p class="mb-0 mt-1">{{ c.text }}</p>
                 </div>
                 {% empty %}
-                <p class="text-muted">Sin comentarios.</p>
+                <div class="empty-state py-3">
+                    <i class="bi bi-chat-dots" style="font-size: 2rem;"></i>
+                    <p class="mb-0">No hay comentarios todavía. Sé el primero en comentar.</p>
+                </div>
                 {% endfor %}
 
                 {% if comments.paginator.num_pages > 1 %}

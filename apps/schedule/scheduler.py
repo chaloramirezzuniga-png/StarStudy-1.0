@@ -25,7 +25,8 @@ def check_habit_notifications():
         if habit.start_time == habit.end_time and habit.start_time.hour == 0 and habit.start_time.minute == 0:
             continue
         for time_field, tipo in [(habit.start_time, 'inicio'), (habit.end_time, 'fin')]:
-            if window_start <= time_field <= window_end:
+            in_window = (window_start <= time_field <= window_end) if window_start <= window_end else (time_field >= window_start or time_field <= window_end)
+            if in_window:
                 notif_key = f"habito_{tipo}_{habit.pk}_{today}"
                 already_sent = Notification.objects.filter(
                     user=habit.user,

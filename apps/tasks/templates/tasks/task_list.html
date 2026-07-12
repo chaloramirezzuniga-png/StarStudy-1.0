@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %}Tareas - StarStudy{% endblock %}
 {% block content %}
 
 {% if user_role == 'PROGRAMMER' %}
@@ -54,8 +55,8 @@
 </style>
 {% endif %}
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h4 class="mb-0">
         {% if is_personal %}
             {% if user_role == 'PROGRAMMER' %}
                 <i class="bi bi-controller me-2"></i>Misiones Personales
@@ -83,8 +84,8 @@
 </div>
 
 <form method="get">
-    <div class="row mb-3">
-        <div class="col-sm-4 mb-2 mb-sm-0">
+    <div class="row g-2 mb-3">
+        <div class="col-12 col-sm-4">
             <select name="importance" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">Todas las importancias</option>
                 {% for key, label in importance_choices %}
@@ -94,7 +95,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-sm-4">
+        <div class="col-12 col-sm-4">
             <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                 <option value="">Todos los estados</option>
                 <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pendientes</option>
@@ -128,9 +129,9 @@
     <div class="mission-card mission-low">
     {% endif %}
 
-        <div class="d-flex justify-content-between align-items-start">
-            <div>
-                <div class="d-flex align-items-center gap-2 mb-1">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+            <div style="min-width: 0;">
+                <div class="d-flex flex-wrap align-items-center gap-1 gap-sm-2 mb-1">
                     {% if task.importance == 'CRITICAL' and not task.is_completed and task.deadline <= urgent_date %}
                         <span class="mission-level" style="background: rgba(255, 145, 0, 0.2); border-color: #ff9100; color: #ff9100;">
                             <i class="bi bi-exclamation-triangle-fill me-1"></i>URGENTE
@@ -166,18 +167,8 @@
                     <div class="mission-xp-bar-fill" style="width: {% if task.importance == 'CRITICAL' %}100{% elif task.importance == 'HIGH' %}75{% elif task.importance == 'MEDIUM' %}50{% else %}25{% endif %}%; background: {% if task.importance == 'CRITICAL' and not task.is_completed and task.deadline <= urgent_date %}#ff9100{% elif task.importance == 'CRITICAL' %}#ff1744{% elif task.importance == 'HIGH' %}#ffd54f{% elif task.importance == 'MEDIUM' %}#42a5f5{% else %}#66bb6a{% endif %};"></div>
                 </div>
             </div>
-            <div class="d-flex gap-1 ms-3">
-                {% if not task.is_completed and task.assigned_to == user %}
-                <a href="{% url 'task_complete' task.pk %}" class="btn btn-outline-success btn-sm">
-                    Completar
-                </a>
-                {% endif %}
-                {% if task.assigned_by == user %}
-                <a href="{% url 'task_delete' task.pk %}" class="btn btn-outline-danger btn-sm"
-                   onclick="return confirm('¿Eliminar?')">
-                    Eliminar
-                </a>
-                {% endif %}
+            <div class="d-flex gap-1 flex-shrink-0">
+                {% include 'tasks/_task_actions.html' with task=task %}
             </div>
         </div>
 
@@ -192,18 +183,18 @@
     {% for task in tasks %}
 
     {% if task.is_completed %}
-    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center list-group-item-success">
+    <div class="list-group-item list-group-item-action d-flex flex-wrap justify-content-between align-items-center gap-2 list-group-item-success">
     {% elif task.deadline < now %}
-    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center list-group-item-danger">
+    <div class="list-group-item list-group-item-action d-flex flex-wrap justify-content-between align-items-center gap-2 list-group-item-danger">
     {% elif not task.is_completed and task.deadline <= urgent_date and task.importance == 'HIGH' %}
-    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="border-left: 4px solid #ff9100;">
+    <div class="list-group-item list-group-item-action d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-left: 4px solid #ff9100;">
     {% elif not task.is_completed and task.deadline <= urgent_date and task.importance == 'CRITICAL' %}
-    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="border-left: 4px solid #ff9100;">
+    <div class="list-group-item list-group-item-action d-flex flex-wrap justify-content-between align-items-center gap-2" style="border-left: 4px solid #ff9100;">
     {% else %}
-    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+    <div class="list-group-item list-group-item-action d-flex flex-wrap justify-content-between align-items-center gap-2">
     {% endif %}
 
-        <div>
+        <div style="min-width: 0;">
             {% if task.importance == 'CRITICAL' %}
                 <span class="badge bg-danger me-2">Crítica</span>
             {% elif task.importance == 'HIGH' %}
@@ -243,19 +234,8 @@
             </small>
         </div>
 
-        <div class="d-flex gap-1">
-            {% if not task.is_completed and task.assigned_to == user %}
-                <a href="{% url 'task_complete' task.pk %}" class="btn btn-outline-success btn-sm">
-                    Completar
-                </a>
-            {% endif %}
-
-            {% if task.assigned_by == user %}
-                <a href="{% url 'task_delete' task.pk %}" class="btn btn-outline-danger btn-sm"
-                   onclick="return confirm('¿Eliminar?')">
-                    Eliminar
-                </a>
-            {% endif %}
+        <div class="d-flex gap-1 flex-shrink-0">
+            {% include 'tasks/_task_actions.html' with task=task %}
         </div>
 
     </div>
@@ -291,8 +271,15 @@
 
 {% else %}
 
-<div class="alert alert-info">
-    No hay tareas.
+<div class="empty-state">
+    <i class="bi bi-clipboard-check"></i>
+    <h5>No hay tareas</h5>
+    <p>No se encontraron tareas con los filtros actuales.</p>
+    {% if can_assign %}
+    <a href="{% url 'task_create' %}{% if is_personal %}?personal=1{% endif %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>Crear tarea
+    </a>
+    {% endif %}
 </div>
 
 {% endif %}

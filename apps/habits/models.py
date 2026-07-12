@@ -26,7 +26,7 @@ class Habit(models.Model):
 
 class HabitCompletion(models.Model):
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='completions')
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True, db_index=True)
     completed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -18,7 +18,7 @@ class User(AbstractUser):
         PROGRAMMER = 'PROGRAMMER', 'Programador'
 
     email = models.EmailField()
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.STUDENT)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.STUDENT, db_index=True)
     code = models.CharField(max_length=6, unique=True, blank=True, null=True)
     linked_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='linked_students')
     github_username = models.CharField(max_length=100, blank=True, null=True)
@@ -46,7 +46,8 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
     def unread_notifications_count(self):
-        return self.notifications.filter(is_read=False).count()
+        from apps.accounts.cache import get_unread_count
+        return get_unread_count(self)
 
     def __str__(self):
         return f"{self.get_full_name() or self.email} ({self.get_role_display()})"
@@ -56,11 +57,14 @@ class Notification(models.Model):
     user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='notifications')
     message = models.CharField(max_length=255)
     link = models.CharField(max_length=255, blank=True, null=True)
-    is_read = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'is_read'], name='idx_notif_user_read'),
+        ]
 
     def __str__(self):
         return f"{self.user.email} - {self.message[:50]}"

@@ -23,6 +23,8 @@ class TaskForm(forms.ModelForm):
         self.fields['deadline'].input_formats = ['%Y-%m-%dT%H:%M']
         if user and user.role != User.Role.STUDENT:
             self.fields['assigned_to'].queryset = User.objects.filter(role=User.Role.STUDENT)
+        elif user:
+            self.fields.pop('assigned_to', None)
 
 
 class CommentForm(forms.ModelForm):

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %}Horario {{ schedule_name }} - StarStudy{% endblock %}
 {% block content %}
 
 {% if user_role == 'PROGRAMMER' %}
@@ -142,11 +143,11 @@
             {% csrf_token %}
             <input type="hidden" name="add" value="1">
             <div class="row g-2 align-items-end">
-                <div class="col-md-2">{{ form.day.label_tag }}{{ form.day }}</div>
-                <div class="col-md-2">{{ form.start_time.label_tag }}{{ form.start_time }}</div>
-                <div class="col-md-2">{{ form.end_time.label_tag }}{{ form.end_time }}</div>
-                <div class="col-md-3">{{ form.title.label_tag }}{{ form.title }}</div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">{{ form.day.label_tag }}{{ form.day }}</div>
+                <div class="col-6 col-md-2">{{ form.start_time.label_tag }}{{ form.start_time }}</div>
+                <div class="col-6 col-md-2">{{ form.end_time.label_tag }}{{ form.end_time }}</div>
+                <div class="col-12 col-md-3">{{ form.title.label_tag }}{{ form.title }}</div>
+                <div class="col-6 col-md-2">
   {% if user_role == 'PROGRAMMER' %}
     <label class="form-label">Tipo</label>
   {% else %}
@@ -154,7 +155,7 @@
   {% endif %}
   {{ form.entry_type }}
 </div>
-                <div class="col-md-1"><button type="submit" class="btn btn-primary w-100">Guardar</button></div>
+                <div class="col-6 col-md-1"><button type="submit" class="btn btn-primary w-100">Guardar</button></div>
             </div>
         </form>
     </div>
@@ -183,7 +184,7 @@
           <div class="map-location map-location-{{ e.entry_type|lower }}" role="button"
                data-bs-toggle="modal" data-bs-target="#entryModal{{ e.pk }}" title="Ver detalle">
             <span class="map-pin">
-              {% if e.entry_type == 'SUBJECT' %}📚{% elif e.entry_type == 'BREAK' %}🌿{% else %}🍽️{% endif %}
+              {% if e.entry_type == 'SUBJECT' %}&#x1F4DA;{% elif e.entry_type == 'BREAK' %}&#x1F33F;{% else %}&#x1F37D;&#xFE0F;{% endif %}
             </span>
             <strong>{{ e.title }}</strong>
             <small>{{ e.start_time|time:'H:i' }} – {{ e.end_time|time:'H:i' }}</small>
@@ -227,7 +228,7 @@
 
 {% for e in all_entries %}
 <div class="modal fade" id="entryModal{{ e.pk }}" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <div class="modal-content entry-modal entry-modal-{{ e.entry_type|lower }}">
             <div class="modal-body text-center py-4 position-relative">
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar" style="position:absolute; top:12px; right:12px;"></button>

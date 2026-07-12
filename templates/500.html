@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% block title %}500 - Error del servidor - StarStudy{% endblock %}
 {% block content %}
-<div class="text-center mt-5">
-    <h1 class="display-1 text-muted">500</h1>
+<div class="text-center mt-5 px-3">
+    <h1 class="display-1 text-muted" style="font-size: clamp(3rem, 12vw, 6rem);">500</h1>
     <p class="lead">Error interno del servidor</p>
     <a href="{% url 'home' %}" class="btn btn-primary">Volver al inicio</a>
 </div>

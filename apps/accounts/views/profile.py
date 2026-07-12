@@ -3,47 +3,26 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from apps.accounts.models import User, Notification
-from apps.tasks.models import Task
+from apps.accounts.services import (
+    get_user_stats, link_student_to_teacher,
+    connect_github, disconnect_github, mark_notification_read,
+)
 
 
 @login_required
 def profile(request):
     user = request.user
-    can_assign = user.role == 'TEACHER' or user.role == 'STAFF' or user.role == 'PROGRAMMER'
-
-    if can_assign:
-        assigned = Task.objects.filter(assigned_by=user).count()
-    else:
-        assigned = 0
-
-    completed = Task.objects.filter(assigned_to=user, is_completed=True).count()
-    pending_tasks = Task.objects.filter(assigned_to=user, is_completed=False).count()
 
     if request.method == 'POST' and user.role == User.Role.STUDENT:
-        code = request.POST.get('code', '').strip().upper()
-        teacher = User.objects.filter(code=code).exclude(role=User.Role.STUDENT).first()
-
-        if teacher:
-            user.linked_to = teacher
-            user.save()
+        code = request.POST.get('code', '')
+        success, teacher = link_student_to_teacher(user, code)
+        if success:
             messages.success(request, 'Vinculado a ' + (teacher.get_full_name() or teacher.email))
         else:
             messages.error(request, 'Código inválido')
-
         return redirect('profile')
 
-    if can_assign:
-        students = user.linked_students.all()
-    else:
-        students = []
-
-    context = {
-        'assigned': assigned,
-        'completed': completed,
-        'pending': pending_tasks,
-        'students': students,
-    }
-
+    context = get_user_stats(user)
     return render(request, 'accounts/profile.html', context)
 
 
@@ -54,11 +33,9 @@ def github_connect(request):
         return redirect('profile')
 
     if request.method == 'POST':
-        username = request.POST.get('github_username', '').strip()
-        if username:
-            request.user.github_username = username
-            request.user.save(update_fields=['github_username'])
-            messages.success(request, f'Cuenta de GitHub @{username} conectada.')
+        username = request.POST.get('github_username', '')
+        if connect_github(request.user, username):
+            messages.success(request, f'Cuenta de GitHub @{username.strip()} conectada.')
         else:
             messages.error(request, 'Ingresá un nombre de usuario de GitHub.')
     return redirect('profile')
@@ -66,28 +43,22 @@ def github_connect(request):
 
 @login_required
 def github_disconnect(request):
-    request.user.github_username = None
-    request.user.github_token = None
-    request.user.save(update_fields=['github_username', 'github_token'])
+    disconnect_github(request.user)
     messages.success(request, 'Cuenta de GitHub desconectada.')
     return redirect('profile')
 
 
+NOTIF_FIELDS = ['id', 'message', 'link', 'is_read', 'created_at']
+
 @login_required
 def notification_list(request):
-    notifs = request.user.notifications.all()
-    paginator = Paginator(notifs, 20)
-    page = request.GET.get('page')
-    notifs_page = paginator.get_page(page)
-    context = {'notifications': notifs_page}
-    return render(request, 'accounts/notification_list.html', context)
+    notifs = request.user.notifications.all().only(*NOTIF_FIELDS)
+    notifs_page = Paginator(notifs, 20).get_page(request.GET.get('page'))
+    return render(request, 'accounts/notification_list.html', {'notifications': notifs_page})
 
 
 @login_required
 def notification_read(request, pk):
     notif = get_object_or_404(Notification, pk=pk, user=request.user)
-    notif.is_read = True
-    notif.save()
-    if notif.link:
-        return redirect(notif.link)
-    return redirect('notification_list')
+    mark_notification_read(notif)
+    return redirect(notif.link) if notif.link else redirect('notification_list')
