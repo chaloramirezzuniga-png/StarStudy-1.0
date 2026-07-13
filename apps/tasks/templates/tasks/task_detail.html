@@ -57,9 +57,7 @@
                         <span class="text-success">Completada {{ task.completed_at|date:'d/m/Y H:i' }}</span>
                     {% elif task.deadline < now %}
                         <span class="text-danger">Vencida</span>
-                    {% elif not task.is_completed and task.deadline <= urgent_date and task.importance == 'HIGH' %}
-                        <span class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Urgente</span>
-                    {% elif not task.is_completed and task.deadline <= urgent_date and task.importance == 'CRITICAL' %}
+                    {% elif not task.is_completed and task.deadline <= urgent_date and task.importance == 'HIGH' or task.importance == 'CRITICAL' %}
                         <span class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Urgente</span>
                     {% else %}
                         <span class="text-warning">Pendiente</span>

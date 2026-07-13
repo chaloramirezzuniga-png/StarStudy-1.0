@@ -2,59 +2,6 @@
 {% block title %}Tareas - StarStudy{% endblock %}
 {% block content %}
 
-{% if user_role == 'PROGRAMMER' %}
-<style>
-  .mission-card {
-    background: rgba(10, 14, 39, 0.7);
-    border: 1px solid rgba(255, 213, 79, 0.2);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-  }
-  .mission-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-  }
-  .mission-card.mission-critical::before { background: #ff1744; }
-  .mission-card.mission-urgent::before { background: #ff9100; }
-  .mission-card.mission-high::before { background: #ffd54f; }
-  .mission-card.mission-medium::before { background: #42a5f5; }
-  .mission-card.mission-low::before { background: #66bb6a; }
-  .mission-card.mission-complete::before { background: #66bb6a; }
-  .mission-card.mission-complete { opacity: 0.6; }
-  .mission-card:hover { transform: translateX(4px); border-color: rgba(255, 213, 79, 0.5); }
-  .mission-level {
-    display: inline-block;
-    background: rgba(255, 213, 79, 0.15);
-    border: 1px solid rgba(255, 213, 79, 0.3);
-    color: var(--accent);
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-  }
-  .mission-xp-bar {
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-    margin-top: 8px;
-    overflow: hidden;
-  }
-  .mission-xp-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.5s;
-  }
-</style>
-{% endif %}
-
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h4 class="mb-0">
         {% if is_personal %}
