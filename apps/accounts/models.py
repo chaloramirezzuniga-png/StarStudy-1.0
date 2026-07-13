@@ -1,9 +1,15 @@
+import base64
+import hashlib
 import secrets
 from django.contrib.auth.models import AbstractUser
-from django.core.signing import Signer
+from django.conf import settings
 from django.db import models
 
-signer = Signer()
+
+def _get_fernet():
+    from cryptography.fernet import Fernet
+    key = hashlib.sha256(settings.SECRET_KEY.encode()).digest()
+    return Fernet(base64.urlsafe_b64encode(key))
 
 
 def generate_code():
@@ -25,13 +31,16 @@ class User(AbstractUser):
     github_token = models.TextField(blank=True, null=True)
 
     def set_github_token(self, raw_token):
-        self.github_token = signer.sign(raw_token) if raw_token else None
+        if raw_token:
+            self.github_token = _get_fernet().encrypt(raw_token.encode()).decode()
+        else:
+            self.github_token = None
 
     def get_github_token(self):
         if not self.github_token:
             return None
         try:
-            return signer.unsign(self.github_token)
+            return _get_fernet().decrypt(self.github_token.encode()).decode()
         except Exception:
             return None
 
@@ -48,6 +57,11 @@ class User(AbstractUser):
     def unread_notifications_count(self):
         from apps.accounts.cache import get_unread_count
         return get_unread_count(self)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['email', 'role'], name='unique_email_role'),
+        ]
 
     def __str__(self):
         return f"{self.get_full_name() or self.email} ({self.get_role_display()})"

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.db import IntegrityError
@@ -7,6 +8,7 @@ from apps.accounts.models import User
 from apps.accounts.forms import RegisterForm
 
 
+@login_required
 def logout_view(request):
     auth_logout(request)
     return redirect('login')

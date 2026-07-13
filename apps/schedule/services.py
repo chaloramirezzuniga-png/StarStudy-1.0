@@ -56,6 +56,9 @@ def add_schedule_entry(user, form, schedule_type):
 
 
 def delete_schedule_entry(entry_id, user):
-    ScheduleEntry.objects.filter(pk=entry_id, user=user).delete()
-    if ScheduleEntry.objects.filter(user=user, schedule_type=ScheduleEntry.ScheduleType.COURSE).exists() or True:
-        invalidate_course_schedule(user.pk)
+    entry = ScheduleEntry.objects.filter(pk=entry_id, user=user).first()
+    if entry:
+        schedule_type = entry.schedule_type
+        entry.delete()
+        if schedule_type == ScheduleEntry.ScheduleType.COURSE:
+            invalidate_course_schedule(user.pk)

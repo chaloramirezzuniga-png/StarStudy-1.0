@@ -48,16 +48,6 @@ def create_task(form, user, is_personal=False):
     return task
 
 
-def notify_task_assigned(task, sender):
-    if task.assigned_to != sender:
-        Notification.objects.create(
-            user=task.assigned_to,
-            message=f'{sender.get_full_name() or sender.email} te asignó: {task.title}',
-            link=f'/tasks/{task.pk}/',
-        )
-        invalidate_unread(task.assigned_to)
-
-
 def complete_task(task, user):
     task.is_completed = True
     task.completed_at = timezone.now()
@@ -80,12 +70,13 @@ def complete_task(task, user):
 
 def delete_task(task):
     personal = task.is_personal
-    pk = task.pk
+    assigned_by = task.assigned_by
+    assigned_to = task.assigned_to
     task.delete()
-    _invalidate_task_caches(task.assigned_by)
-    if task.assigned_to != task.assigned_by:
-        _invalidate_task_caches(task.assigned_to)
-    return personal, pk
+    _invalidate_task_caches(assigned_by)
+    if assigned_to != assigned_by:
+        _invalidate_task_caches(assigned_to)
+    return personal, task.pk
 
 
 def add_comment(task, user, text):

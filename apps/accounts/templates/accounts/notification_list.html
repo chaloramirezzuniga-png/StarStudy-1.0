@@ -4,7 +4,7 @@
 <h4><i class="bi bi-bell me-2"></i>Notificaciones</h4>
 
 {% for n in notifications %}
-<div class="card mb-2 {% if not n.is_read %}" style="border-color: var(--accent);{% endif %}">
+<div class="card mb-2" {% if not n.is_read %}style="border-color: var(--accent);"{% endif %}>
     <div class="card-body py-2 d-flex flex-wrap justify-content-between align-items-start align-items-center gap-2">
         <div style="min-width: 0;">
             <p class="mb-0">{{ n.message }}</p>
@@ -12,7 +12,10 @@
         </div>
         <div class="flex-shrink-0">
             {% if not n.is_read %}
-            <a href="{% url 'notification_read' n.pk %}" class="btn btn-sm btn-outline-light">Leer</a>
+            <form method="post" action="{% url 'notification_read' n.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-light">Leer</button>
+            </form>
             {% endif %}
         </div>
     </div>

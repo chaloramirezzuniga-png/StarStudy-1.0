@@ -7,7 +7,7 @@ def build_schedule_table(entries, day_values):
     all_times.sort()
 
     if not all_times:
-        all_times = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+        all_times = [f'{h:02d}:00' for h in range(8, 18)]
 
     grid = {}
     for e in entries:

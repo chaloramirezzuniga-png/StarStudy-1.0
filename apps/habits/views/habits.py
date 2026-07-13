@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Count, Exists, OuterRef
-from datetime import date
+from django.utils import timezone
 from apps.habits.models import Habit, HabitCompletion
 from apps.habits.services import toggle_habit, create_habit, delete_habit
 from apps.accounts.decorators import role_required
@@ -9,7 +9,7 @@ from apps.accounts.decorators import role_required
 
 @role_required('STAFF')
 def habito_list(request):
-    today = date.today()
+    today = timezone.localdate()
     habits = request.user.habits.all().annotate(
         total_completions=Count('completions'),
         completed_today=Exists(

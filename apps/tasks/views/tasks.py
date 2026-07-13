@@ -20,7 +20,7 @@ def task_list(request):
     is_personal = request.GET.get('personal') == '1'
 
     tasks = get_task_queryset(user, is_personal=is_personal)
-    tasks = apply_filters(tasks, request.GET, request.GET.get('status'), now)
+    tasks = apply_filters(tasks, request.GET.get('importance'), request.GET.get('status'), now)
 
     paginator = Paginator(tasks, 10)
     tasks_page = paginator.get_page(request.GET.get('page'))
@@ -39,7 +39,25 @@ def task_list(request):
 
 @login_required
 def task_personal(request):
-    return task_list(request)
+    user = request.user
+    now = timezone.now()
+
+    tasks = get_task_queryset(user, is_personal=True)
+    tasks = apply_filters(tasks, request.GET.get('importance'), request.GET.get('status'), now)
+
+    paginator = Paginator(tasks, 10)
+    tasks_page = paginator.get_page(request.GET.get('page'))
+
+    context = {
+        'tasks': tasks_page,
+        'can_assign': user.role in ('TEACHER', 'STAFF', 'PROGRAMMER'),
+        'now': now,
+        'urgent_date': now + timedelta(days=3),
+        'importance_choices': Task.Importance.choices,
+        'is_personal': True,
+        'user_role': user.role,
+    }
+    return render(request, 'tasks/task_list.html', context)
 
 
 @login_required

@@ -59,6 +59,8 @@ def notification_list(request):
 
 @login_required
 def notification_read(request, pk):
+    if request.method != 'POST':
+        return redirect('notification_list')
     notif = get_object_or_404(Notification, pk=pk, user=request.user)
     mark_notification_read(notif)
     return redirect(notif.link) if notif.link else redirect('notification_list')

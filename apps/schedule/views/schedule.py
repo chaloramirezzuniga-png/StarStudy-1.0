@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from apps.accounts.models import User
 from apps.schedule.models import ScheduleEntry
 from apps.schedule.forms import ScheduleEntryForm
 from apps.schedule.services import get_schedule_context, add_schedule_entry, delete_schedule_entry
@@ -26,6 +27,7 @@ def schedule_personal(request):
 
 
 @login_required
+@role_required('STUDENT')
 def schedule_student_course(request):
     teacher = request.user.linked_to
     if not teacher:

@@ -15,23 +15,26 @@ def home(request):
 
     def fetch_stats():
         HOME_FIELDS = ['id', 'title', 'importance', 'deadline', 'is_completed', 'is_personal', 'assigned_to_id', 'assigned_by_id']
-        base_tasks = Task.objects.select_related('assigned_to', 'assigned_by').only(*HOME_FIELDS)
 
         if is_student:
-            base_tasks = base_tasks.filter(assigned_to=user, is_personal=False)
+            all_tasks = Task.objects.select_related('assigned_to', 'assigned_by').only(*HOME_FIELDS).filter(assigned_to=user)
+            base_tasks = all_tasks.filter(is_personal=False)
         else:
-            base_tasks = base_tasks.filter(assigned_by=user, is_personal=False)
+            all_tasks = Task.objects.select_related('assigned_to', 'assigned_by').only(*HOME_FIELDS).filter(assigned_by=user)
+            base_tasks = all_tasks.filter(is_personal=False)
 
         counts = base_tasks.aggregate(
             pending=Count('id', filter=Q(is_completed=False)),
             overdue=Count('id', filter=Q(is_completed=False, deadline__lt=now)),
             completed=Count('id', filter=Q(is_completed=True)),
-            personal=Count('id', filter=Q(is_personal=True, is_completed=False)),
         )
 
-        recent = list(base_tasks.filter(is_completed=False).order_by('deadline')[:5])
-        recent_pending = list(base_tasks.filter(is_completed=False).order_by('deadline')[:3])
+        personal_count = all_tasks.filter(is_personal=True, is_completed=False).count()
 
+        recent = list(base_tasks.filter(is_completed=False).order_by('deadline')[:5])
+        recent_pending = recent[:3]
+
+        counts['personal'] = personal_count
         counts['recent'] = recent
         counts['recent_pending'] = recent_pending
         return counts
@@ -49,6 +52,7 @@ def home(request):
         'recent_pending': stats['recent_pending'],
         'level': level,
         'xp': xp,
+        'xp_percent': xp * 20,
         'next_level_xp': 5,
         'completed_count': completed_count,
         'personal_count': stats['personal'],

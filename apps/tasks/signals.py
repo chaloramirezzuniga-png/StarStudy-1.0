@@ -2,6 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from apps.tasks.models import Task
 from apps.accounts.models import Notification
+from apps.accounts.cache import invalidate_unread
 
 
 @receiver(post_save, sender=Task)
@@ -12,3 +13,4 @@ def notificar_tarea_asignada(sender, instance, created, **kwargs):
             message=f'{instance.assigned_by.get_full_name() or instance.assigned_by.email} te asignó: {instance.title}',
             link=f'/tasks/{instance.pk}/',
         )
+        invalidate_unread(instance.assigned_to)

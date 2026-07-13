@@ -1,6 +1,7 @@
 import logging
-from datetime import date, timedelta
+from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.db import transaction
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -12,12 +13,13 @@ _started = False
 def check_habit_notifications():
     from apps.habits.models import Habit
     from apps.accounts.models import Notification
+    from apps.accounts.cache import invalidate_unread
 
     now_dt = timezone.now()
     today = now_dt.date()
     now_time = now_dt.time()
-    window_start = (now_dt - timedelta(minutes=1)).time()
-    window_end = (now_dt + timedelta(minutes=1)).time()
+    window_start = (now_dt - timedelta(minutes=2)).time()
+    window_end = (now_dt + timedelta(minutes=2)).time()
 
     habits = Habit.objects.select_related('user').all()
 
@@ -35,24 +37,26 @@ def check_habit_notifications():
                 if not already_sent:
                     msg_map = {'inicio': f'[{notif_key}] ¡Hora de comenzar "{habit.title}"!',
                                'fin': f'[{notif_key}] ¡Hora de terminar "{habit.title}"!'}
-                    Notification.objects.create(
-                        user=habit.user,
-                        message=msg_map[tipo],
-                        link='/habitos/'
-                    )
+                    with transaction.atomic():
+                        Notification.objects.create(
+                            user=habit.user,
+                            message=msg_map[tipo],
+                            link='/habitos/'
+                        )
+                    invalidate_unread(habit.user)
 
 
 def check_task_deadlines():
     from apps.tasks.models import Task
     from apps.accounts.models import Notification
-    from django.utils import timezone
+    from apps.accounts.cache import invalidate_unread
 
     now_dt = timezone.now()
-    one_min_ago = now_dt - timedelta(minutes=1)
+    two_min_ago = now_dt - timedelta(minutes=2)
 
     expiring = Task.objects.filter(
         is_completed=False,
-        deadline__gte=one_min_ago,
+        deadline__gte=two_min_ago,
         deadline__lte=now_dt,
         is_personal=False,
     ).select_related('assigned_by', 'assigned_to')
@@ -64,11 +68,13 @@ def check_task_deadlines():
             message__startswith=f"[{notif_key}]"
         ).exists()
         if not already_sent:
-            Notification.objects.create(
-                user=task.assigned_by,
-                message=f'[{notif_key}] Vence hoy: "{task.title}" de {task.assigned_to.get_full_name() or task.assigned_to.email}',
-                link=f'/tasks/{task.pk}/',
-            )
+            with transaction.atomic():
+                Notification.objects.create(
+                    user=task.assigned_by,
+                    message=f'[{notif_key}] Vence hoy: "{task.title}" de {task.assigned_to.get_full_name() or task.assigned_to.email}',
+                    link=f'/tasks/{task.pk}/',
+                )
+            invalidate_unread(task.assigned_by)
 
 
 def start():

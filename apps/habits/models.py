@@ -1,6 +1,6 @@
-from datetime import date
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Habit(models.Model):
@@ -15,7 +15,7 @@ class Habit(models.Model):
         ordering = ['-level', 'title']
 
     def completed_today(self):
-        return self.completions.filter(date=date.today()).exists()
+        return self.completions.filter(date=timezone.localdate()).exists()
 
     def total_completions(self):
         return self.completions.count()
