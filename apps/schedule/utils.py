@@ -1,3 +1,8 @@
+"""Utilidad de schedule: construye la grilla del horario.
+
+- build_schedule_table: recibe lista de entradas y lista de días, retorna filas
+  con tuplas (hora, [entradas_por_día]). Si no hay entradas, genera slots de 08:00 a 18:00.
+"""
 def build_schedule_table(entries, day_values):
     all_times = []
     for e in entries:

@@ -1,3 +1,8 @@
+"""Formularios de accounts: registro y login.
+
+- RegisterForm: registro con email, rol, nombre, código de vinculación (opcional para estudiantes).
+- CustomLoginForm: login con email + rol + contraseña. Valida que coincidan email, rol y password.
+"""
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm

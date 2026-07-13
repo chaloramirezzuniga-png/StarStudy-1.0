@@ -1,3 +1,4 @@
+"""Admin de accounts: registro de User y Notification en panel de administración."""
 from django.contrib import admin
 from .models import User, Notification
 

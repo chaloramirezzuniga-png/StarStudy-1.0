@@ -1,3 +1,4 @@
+"""URLs de habits: listar, crear, toggle, eliminar."""
 from django.urls import path
 from . import views
 

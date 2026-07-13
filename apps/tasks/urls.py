@@ -1,3 +1,4 @@
+"""URLs de tasks: lista, personal, crear, detalle, completar, eliminar, comentar."""
 from django.urls import path
 from . import views
 

@@ -1,3 +1,9 @@
+"""Formularios de tasks: creación de tareas y comentarios.
+
+- TaskForm: formulario con título, descripción, importancia, deadline, archivo adjunto,
+  y assigned_to (limitado a estudiantes si el usuario es profesor/personal/programador).
+- CommentForm: textarea para agregar comentarios.
+"""
 from django import forms
 from django.conf import settings
 from .models import Task, Comment

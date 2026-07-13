@@ -1,3 +1,9 @@
+"""Configuración de Django para StarStudy.
+
+Configuración principal del proyecto: bases de datos (SQLite con timeout),
+cache (LocMemCache), autenticación por email+rol, zona horaria Argentina,
+seguridad (HSTS, XSS, CSRF, X-Frame-Options), y apps instaladas.
+"""
 from pathlib import Path
 from dotenv import load_dotenv
 import os

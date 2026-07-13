@@ -1,3 +1,9 @@
+"""Models de schedule: Entrada de horario.
+
+- ScheduleEntry: entrada horaria con día (Lun-Vie), hora inicio/fin, título,
+  tipo de entrada (Materia/Recreo/Almuerzo) y tipo de horario (Personal/Curso).
+  El schedule_type se asigna automáticamente en la vista (no en el formulario).
+"""
 from django.conf import settings
 from django.db import models
 

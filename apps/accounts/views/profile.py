@@ -1,3 +1,10 @@
+"""Vistas de perfil: información del usuario, vinculación, GitHub y notificaciones.
+
+- profile: muestra stats del perfil; estudiantes pueden vincularse con código.
+- github_connect / github_disconnect: gestiona cuenta GitHub (solo programadores).
+- notification_list: lista paginada de notificaciones.
+- notification_read: marca notificación como leída (POST-only, CSRF).
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages

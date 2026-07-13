@@ -1,3 +1,8 @@
+"""Backend de autenticación personalizado: login por email + rol.
+
+Permite que un mismo email tenga múltiples cuentas con diferentes roles.
+El campo username del formulario se usa para el email.
+"""
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 

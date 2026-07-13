@@ -1,3 +1,10 @@
+"""Vistas de habits: CRUD de hábitos diarios (solo STAFF).
+
+- habito_list: lista hábitos con anotaciones (total_completions, completed_today) en 1 query.
+- habito_toggle: marca/desmarca hábito (POST-only, no permite desmarcar).
+- habito_create: formulario para crear hábito con título y horarios.
+- habito_delete: elimina hábito (POST-only).
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Count, Exists, OuterRef

@@ -1,3 +1,10 @@
+"""Models de accounts: Usuario y Notificaciones.
+
+- User: Extiende AbstractUser con roles (Estudiante, Profesor, Personal, Programador),
+  sistema de vinculación entre profesores y estudiantes, código de invitación,
+  y encriptación de token de GitHub con Fernet.
+- Notification: Notificaciones del sistema con cache de conteo no leído.
+"""
 import base64
 import hashlib
 import secrets
@@ -7,16 +14,24 @@ from django.db import models
 
 
 def _get_fernet():
+    """Retorna instancia Fernet para encriptar/desencriptar tokens."""
     from cryptography.fernet import Fernet
     key = hashlib.sha256(settings.SECRET_KEY.encode()).digest()
     return Fernet(base64.urlsafe_b64encode(key))
 
 
 def generate_code():
+    """Genera código alfanumérico de 6 caracteres para vinculación profesor-estudiante."""
     return secrets.token_hex(3).upper()
 
 
 class User(AbstractUser):
+    """Usuario del sistema con rol asignado y sistema de vinculación.
+
+    Roles: STUDENT, TEACHER, STAFF, PROGRAMMER.
+    Los profesores generan un código que los estudiantes usan para vincularse.
+    El token de GitHub se encripta con Fernet antes de guardarse en DB.
+    """
     class Role(models.TextChoices):
         STUDENT = 'STUDENT', 'Estudiante'
         TEACHER = 'TEACHER', 'Profesor'
@@ -31,12 +46,14 @@ class User(AbstractUser):
     github_token = models.TextField(blank=True, null=True)
 
     def set_github_token(self, raw_token):
+        """Encripta y guarda el token de GitHub del usuario."""
         if raw_token:
             self.github_token = _get_fernet().encrypt(raw_token.encode()).decode()
         else:
             self.github_token = None
 
     def get_github_token(self):
+        """Desencripta y retorna el token de GitHub, o None si no existe."""
         if not self.github_token:
             return None
         try:
@@ -48,6 +65,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', 'role']
 
     def save(self, *args, **kwargs):
+        """Genera código de vinculación automáticamente para profesores/personal/programadores."""
         if not self.code and self.role != self.Role.STUDENT:
             self.code = generate_code()
             while User.objects.filter(code=self.code).exists():
@@ -55,6 +73,7 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
     def unread_notifications_count(self):
+        """Retorna cantidad de notificaciones no leídas (con cache de 2 min)."""
         from apps.accounts.cache import get_unread_count
         return get_unread_count(self)
 
@@ -68,6 +87,11 @@ class User(AbstractUser):
 
 
 class Notification(models.Model):
+    """Notificación del sistema enviada a un usuario.
+
+    Se usa para alertas de tareas, bienvenida, deadlines, y hábitos.
+    El conteo de no leídas se cachea y se invalida al crear/marcar como leída.
+    """
     user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='notifications')
     message = models.CharField(max_length=255)
     link = models.CharField(max_length=255, blank=True, null=True)

@@ -1,3 +1,4 @@
+"""URLs de schedule: personal, curso profesor, curso estudiante."""
 from django.urls import path
 from . import views
 

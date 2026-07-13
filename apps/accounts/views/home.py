@@ -1,3 +1,8 @@
+"""Vista home: dashboard principal del usuario con estadísticas y nivel.
+
+Muestra tareas pendientes, vencidas, personales, y un sistema de nivel/xp
+basado en tareas completadas (5 tareas = 1 nivel). Usa cache de 5 min.
+"""
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q

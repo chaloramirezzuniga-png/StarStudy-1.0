@@ -1,3 +1,11 @@
+"""Servicios de accounts: lógica de negocio para perfil, vinculación, GitHub y notificaciones.
+
+Funciones:
+- get_user_stats: estadísticas del perfil con cache.
+- link_student_to_teacher: vincula estudiante a profesor por código.
+- connect_github / disconnect_github: gestiona cuenta GitHub (solo programadores).
+- mark_notification_read: marca notificación leída y invalida cache.
+"""
 from django.db.models import Count, Q
 from apps.accounts.models import User, Notification
 from apps.accounts.cache import (

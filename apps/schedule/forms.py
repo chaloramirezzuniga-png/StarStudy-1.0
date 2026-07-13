@@ -1,3 +1,9 @@
+"""Formulario de schedule: formulario de entrada horaria.
+
+- ScheduleEntryForm: formulario para crear/editar entradas de horario.
+  Valida que hora fin > hora inicio y que no se superponga con otra entrada existente.
+  Para PROGRAMMER, limita los entry_type a Materia/Descanso/Comida.
+"""
 from django import forms
 from .models import ScheduleEntry
 from apps.accounts.models import User

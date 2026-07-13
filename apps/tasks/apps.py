@@ -1,3 +1,4 @@
+"""Configuración de la app tasks: registra signals de notificación de asignación."""
 from django.apps import AppConfig
 
 

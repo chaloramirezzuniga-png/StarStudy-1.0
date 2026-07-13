@@ -1,3 +1,4 @@
+"""Admin de habits: registro de Habit y HabitCompletion en panel de administración."""
 from django.contrib import admin
 from .models import Habit, HabitCompletion
 

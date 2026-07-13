@@ -1,3 +1,10 @@
+"""Models de tasks: Tarea y Comentario.
+
+- Task: Tarea con importancia (LOW/MEDIUM/HIGH/CRITICAL), deadline, asignación
+  bidireccional (assigned_by → assigned_to), flag is_personal para tareas privadas,
+  y 3 índices compuestos para consultas frecuentes.
+- Comment: Comentarios en tareas, ordenados cronológicamente.
+"""
 from django.conf import settings
 from django.db import models
 from django.db.models import Case, IntegerField, Value, When

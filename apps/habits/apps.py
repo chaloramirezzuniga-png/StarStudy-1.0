@@ -1,3 +1,4 @@
+"""Configuración de la app habits: gestión de hábitos diarios."""
 from django.apps import AppConfig
 
 

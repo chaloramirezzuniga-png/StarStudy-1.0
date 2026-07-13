@@ -1,3 +1,9 @@
+"""Vistas de schedule: horarios personal, del curso y del profesor.
+
+- schedule_personal: horario personal del usuario (lectura/escritura).
+- schedule_student_course: horario del curso del profesor vinculado (solo lectura, solo STUDENT).
+- schedule_course: horario del curso del profesor (lectura/escritura, solo TEACHER).
+"""
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages

@@ -1,3 +1,4 @@
+"""Configuración de la app schedule: inicia APScheduler al arrancar el servidor."""
 import sys
 from django.apps import AppConfig
 

@@ -1,3 +1,8 @@
+"""URLs principales de StarStudy.
+
+Incluye: admin, accounts (home/profile/login/register), tasks, habits, schedule.
+Sirve archivos media en desarrollo (DEBUG=True).
+"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings

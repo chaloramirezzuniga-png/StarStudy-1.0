@@ -1,3 +1,10 @@
+"""Decoradores de control de acceso por rol.
+
+- role_required(*roles): requiere login + rol específico.
+- teacher_required: atajo para role_required('TEACHER').
+- programmer_required: atajo para role_required('PROGRAMMER').
+- can_assign_required: requiere TEACHER, STAFF o PROGRAMMER.
+"""
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.contrib import messages

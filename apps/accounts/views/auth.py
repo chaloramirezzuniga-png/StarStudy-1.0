@@ -1,3 +1,9 @@
+"""Vistas de autenticación: registro, login y logout.
+
+- register: formulario de registro con rol y código de vinculación opcional.
+- join: redirige al registro prellenando el código desde URL pública /join/<code>/.
+- logout_view: cierra sesión (requiere login).
+"""
 from django.shortcuts import render, redirect
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required

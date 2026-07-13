@@ -1,3 +1,11 @@
+"""Scheduler APScheduler: tareas en background para notificaciones.
+
+- check_habit_notifications: cada 1 min, verifica hábitos con hora de inicio/fin
+  dentro de ventana de ±2 min. Crea notificación si no fue enviada hoy.
+- check_task_deadlines: cada 1 min, verifica tareas no personales que vencen hoy
+  (deadline en últimos 2 min). Notifica al creador de la tarea.
+- start: inicia el scheduler (solo una vez). Se llama desde AppConfig.ready().
+"""
 import logging
 from datetime import timedelta
 from apscheduler.schedulers.background import BackgroundScheduler

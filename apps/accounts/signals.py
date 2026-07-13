@@ -1,3 +1,7 @@
+"""Signals de accounts: notificaciones automáticas al crear usuarios.
+
+Señal post_save en User: envía notificación de bienvenida y invalida cache de no leídos.
+"""
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from apps.accounts.models import User, Notification

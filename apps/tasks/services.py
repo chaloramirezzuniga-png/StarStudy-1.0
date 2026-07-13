@@ -1,3 +1,13 @@
+"""Servicios de tasks: lógica de negocio para CRUD de tareas y comentarios.
+
+Funciones:
+- get_task_queryset: retorna queryset optimizado según rol (creador vs receptor).
+- apply_filters: aplica filtros de importancia y estado (pendiente/completada/vencida).
+- create_task: crea tarea y invalida caches de ambos usuarios.
+- complete_task: marca tarea completada, notifica al creador.
+- delete_task: elimina tarea, captura datos antes de borrar, invalida caches.
+- add_comment: crea comentario en una tarea.
+"""
 from django.utils import timezone
 from apps.tasks.models import Task, Comment
 from apps.accounts.models import Notification

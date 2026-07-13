@@ -1,3 +1,4 @@
+"""Configuración de la app accounts: registra signals de bienvenida."""
 from django.apps import AppConfig
 
 

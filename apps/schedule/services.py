@@ -1,3 +1,11 @@
+"""Servicios de schedule: lógica de negocio para horarios y cache.
+
+Funciones:
+- get_schedule_context: construye contexto del horario con cache (30 min para cursos).
+  Para estudiantes (readonly), usa el horario del profesor vinculado.
+- add_schedule_entry: crea entrada y invalida cache si es horario de curso.
+- delete_schedule_entry: elimina entrada y invalida cache si es horario de curso.
+"""
 from apps.schedule.models import ScheduleEntry
 from apps.schedule.utils import build_schedule_table
 from apps.accounts.cache import get_course_schedule, invalidate_course_schedule

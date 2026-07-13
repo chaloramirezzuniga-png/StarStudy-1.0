@@ -1,3 +1,10 @@
+"""Servicios de habits: lógica de negocio para hábitos.
+
+- toggle_habit: marca hábito completado hoy (get_or_create), incrementa nivel.
+  Retorna (created, habit). No permite desmarcar hasta mañana.
+- create_habit: crea nuevo hábito con título y horarios.
+- delete_habit: elimina hábito y retorna título para mensaje de éxito.
+"""
 from django.utils import timezone
 from apps.habits.models import Habit, HabitCompletion
 

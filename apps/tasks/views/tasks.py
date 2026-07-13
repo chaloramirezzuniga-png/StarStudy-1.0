@@ -1,3 +1,13 @@
+"""Vistas de tasks: CRUD de tareas y comentarios.
+
+- task_list: lista tareas con filtros, paginación (10 por página), unified para asignadas y personales.
+- task_personal: atajo a task_list con is_personal=True.
+- task_detail: detalle de tarea con comentarios paginados.
+- task_create: crear tarea (asignada o personal) con rol TEACHER/STAFF/PROGRAMMER.
+- task_complete: marcar tarea como completada (POST-only).
+- task_delete: eliminar tarea creada por el usuario (POST-only).
+- comment_create: agregar comentario a tarea (POST-only).
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages

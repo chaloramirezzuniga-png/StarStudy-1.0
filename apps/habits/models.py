@@ -1,3 +1,10 @@
+"""Models de habits: Hábito y Registro de completación.
+
+- Habit: hábito diario con título, horario de inicio/fin, y nivel que sube al completarse.
+  Ordenado por nivel descendente. Usa timezone.localdate() para fecha actual.
+- HabitCompletion: registro de completación diaria (unique_together habit+date).
+  Evita marcar el mismo hábito dos veces el mismo día.
+"""
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
